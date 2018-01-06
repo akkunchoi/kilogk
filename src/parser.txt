@@ -1,0 +1,67 @@
+// kilogk PEG for https://pegjs.org/online
+
+Term
+  = head:Line tail:(_ Line)* {
+    return tail.reduce(function(s, v) {
+       if (v) {
+         s.push(v[1]);
+       }
+        return s;
+    }, [head])
+  }
+
+Line
+  = Record / Header / Event / LineSeparator {
+  }
+
+Record
+  = time:TimeFormat Space chars:Char _ {
+      return {type: 'record', time, chars}
+  }
+
+Header
+  = HeaderKeyword Space date:DateFormat {
+    return {type: 'header', date}
+  }
+
+HeaderKeyword = "log"
+
+Event
+  = EventKeyword Space chars:Char _ {
+    return {type: 'event', chars}
+  }
+
+EventKeyword = "*"
+
+TimeFormat
+  = hour:Integer TimeSeparator minute:Integer {
+    return {hour, minute}
+  } / hour:Integer {
+    return {hour}
+  }
+
+DateFormat
+  = year:Integer DateSeparator month:Integer DateSeparator day:Integer {
+    return {year, month, day}
+  }
+
+Integer
+  = [0-9]+ { return text() }
+
+Char
+  = [^\n\r]+ {return text() }
+
+Space
+  = [ ]+
+
+DateSeparator
+  = "-"
+
+TimeSeparator
+  = ":"
+
+_ "line separator"
+  = LineSeparator*
+
+LineSeparator
+  = [\n\r]

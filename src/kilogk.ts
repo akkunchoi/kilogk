@@ -1,6 +1,8 @@
 import * as fs from "fs-extra";
 import * as moment from "moment";
 
+const parser = require("./parser");
+
 export default function (): Promise<any> {
   interface KilogkConfig {
     source: {
@@ -60,34 +62,39 @@ export default function (): Promise<any> {
     
     parse(dayFile: DayFile) {
       const str = dayFile.raw;
-      
-      let day: string; 
-      const records: Array<[string, string, string]> = [];
-      
-      str.split("\n").forEach((line) => {
-        const dayMatcher = /^log (\d{4}-\d{2}-\d{2})/;
-        const recordMatcher = /^(\d{1,2})(?::(\d{1,2}))?\s+(.*)$/;
 
-        const dayMatched = line.match(dayMatcher);
-        if (dayMatched) {
-          day = dayMatched[1];
-        }
-        const recordMatched = line.match(recordMatcher);
-        if (recordMatched) {
-          records.push([recordMatched[1], recordMatched[2], recordMatched[3]]);
-        }
-      });
-      
-      return records.map((record) => {
-        
-      });
+      if (str) {
+        console.log(str);
+        console.log(parser.parse(str));
+      }
+
+      // let day: string;
+      // const records: Array<[string, string, string]> = [];
+      //
+      // str.split("\n").forEach((line) => {
+      //   const dayMatcher = /^log (\d{4}-\d{2}-\d{2})/;
+      //   const recordMatcher = /^(\d{1,2})(?::(\d{1,2}))?\s+(.*)$/;
+      //
+      //   const dayMatched = line.match(dayMatcher);
+      //   if (dayMatched) {
+      //     day = dayMatched[1];
+      //   }
+      //   const recordMatched = line.match(recordMatcher);
+      //   if (recordMatched) {
+      //     records.push([recordMatched[1], recordMatched[2], recordMatched[3]]);
+      //   }
+      // });
+      //
+      // return records.map((record) => {
+      //
+      // });
       
     }
   }
 
   const kilogk = new Kilogk({
     source: {
-      path: "/Users/akiyoshi/Documents/nvALT/",
+      path: "/Users/akiyoshi/Library/Application Support/Notational Data/",
       filename: "log %date%.txt",
       format: "YYYY-MM-DD"
     },
