@@ -7,6 +7,7 @@ export class EventPattern {
   private _name: String;
   private _category: String;
   private _type: EventPatternType;
+  private _total: boolean;
 
   constructor(patternObj: any) {
 
@@ -33,6 +34,9 @@ export class EventPattern {
       this._type = EventPatternType.ALL_DAY;
     }
 
+    if (patternObj.total) {
+      this._total = patternObj.total;
+    }
   }
 
   get start(): RegExp {
@@ -59,4 +63,7 @@ export class EventPattern {
     return this._type;
   }
 
+  get total(): boolean {
+    return this._total;
+  }
 }
