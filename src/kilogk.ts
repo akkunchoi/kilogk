@@ -3,6 +3,7 @@ import * as moment from "moment";
 import * as _ from "lodash";
 
 import { DailyLogFactory } from "./DailyLogFactory";
+import { DailyLog } from "./DailyLog";
 
 export default function (): Promise<any> {
   interface KilogkConfig {
@@ -16,8 +17,8 @@ export default function (): Promise<any> {
 
   type Week = Date[];
 
-  class DayFile {
-    constructor(public raw?: string) {
+  class DailyFile {
+    constructor(public date: Date, public raw?: string) {
     }
   }
 
@@ -37,8 +38,11 @@ export default function (): Promise<any> {
       const week = this.createWeek();
       const files = await this.loadFiles(week);
 
-      const a = this.parse(files[0]);
-      console.log(a);
+      const logs = files
+        .map((file) => this.parse(file))
+        .filter((file) => file);
+      console.log(logs);
+
     }
     
     createWeek(firstDay: Date = new Date()): Week {
@@ -48,7 +52,7 @@ export default function (): Promise<any> {
       });
     }
     
-    async loadFiles(week: Week): Promise<DayFile[]> {
+    async loadFiles(week: Week): Promise<DailyFile[]> {
       const recordPromises = week.map((date) => {
         const path = this.config.source.path;
         const filename = this.config.source.filename;
@@ -56,20 +60,26 @@ export default function (): Promise<any> {
         
         return fs.ensureFile(filepath).then(() => {
           return fs.readFile(filepath, "utf-8").then((result: string) => {
-            return new DayFile(result);
+            return new DailyFile(date, result);
           });
         }, () => {
-          return new DayFile();
+          return new DailyFile(date);
         });
       });
       
       return Promise.all(recordPromises);
     }
 
-    parse(dayFile: DayFile) {
+    parse(dayFile: DailyFile): DailyLog {
       const factory = new DailyLogFactory();
-      return factory.build(dayFile.raw);
+
+      try {
+        return factory.build(dayFile.raw);
+      } catch (err) {
+        console.warn(err, dayFile);
+      }
     }
+
   }
 
   const kilogk = new Kilogk({

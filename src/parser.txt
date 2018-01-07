@@ -2,12 +2,16 @@
 
 /** sample data
 
+----------------------------------------
 log 2018-01-07
 
 * hoge
 
 02:02 い
 1 あ
+
+ignore
+----------------------------------------
 
 */
 
@@ -22,7 +26,7 @@ Term
   }
 
 Line
-  = Record / Header / Event / LineSeparator {
+  = Record / Header / Daily / Ignore / LineSeparator {
   }
 
 Record
@@ -37,12 +41,12 @@ Header
 
 HeaderKeyword = "log"
 
-Event
-  = EventKeyword Space chars:Char _ {
-    return {type: 'event', chars}
+Daily
+  = DailyKeyword Space chars:Char _ {
+    return {type: 'daily', chars}
   }
 
-EventKeyword = "*"
+DailyKeyword = "*"
 
 TimeFormat
   = hour:Integer TimeSeparator minute:Integer {
@@ -54,6 +58,11 @@ TimeFormat
 DateFormat
   = year:Integer DateSeparator month:Integer DateSeparator day:Integer {
     return {year, month, day}
+  }
+
+Ignore
+  = chars:Char _ {
+    return {type: "ignore", chars}
   }
 
 Integer

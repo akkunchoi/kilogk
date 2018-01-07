@@ -21,11 +21,19 @@ type LexicalParsedLine = {
 };
 type LexicalParsed = LexicalParsedLine[];
 
+class DailyLogParseError extends Error {
+  public name = "DailyLogParseError";
+}
+
 export class DailyLogFactory {
   constructor() {
 
   }
   build(text: string): DailyLog {
+
+    if (text.length === 0) {
+      throw new DailyLogParseError();
+    }
 
     const parsed = this.lexer(text);
 
