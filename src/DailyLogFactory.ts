@@ -79,10 +79,11 @@ export class DailyLogFactory {
 
     return new DailyLog(headerDate, records, dailyRecords);
   }
-  buildDatetimeFromParsedLine(line: LexicalParsedLine, baseDate?: moment.Moment): moment.Moment {
-    let date;
+  buildDatetimeFromParsedLine(line: LexicalParsedLine, baseDate?: Date): Date {
+    let date: moment.Moment;
+
     if (baseDate) {
-      date = baseDate.clone();
+      date = moment(baseDate);
     } else if (line.date) {
       date = moment([line.date.year, line.date.month, line.date.day].join("-"));
     }
@@ -91,7 +92,7 @@ export class DailyLogFactory {
       date.hours(parseInt(line.time.hour, 10)).minutes(parseInt(line.time.minute, 10));
     }
 
-    return date;
+    return date.toDate();
   }
   lexer(str: string): LexicalParsed {
     let parsed = undefined;

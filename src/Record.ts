@@ -2,12 +2,12 @@ import * as moment from "moment";
 
 export class Record {
   private midnight = false;
-  constructor(private text: string, private datetime?: moment.Moment) {
+  constructor(private text: string, private datetime: Date) {
   }
   compare(r: Record): number {
-    if (this.datetime.isAfter(r.datetime)) {
+    if (moment(this.datetime).isAfter(r.datetime)) {
       return -1;
-    } else if (this.datetime.isBefore(r.datetime)) {
+    } else if (moment(this.datetime).isBefore(r.datetime)) {
       return 1;
     } else {
       return 0;
@@ -15,6 +15,6 @@ export class Record {
   }
   setMidnight() {
     this.midnight = true;
-    this.datetime.add(1, "day");
+    this.datetime = moment(this.datetime).add(1, "day").toDate();
   }
 }
