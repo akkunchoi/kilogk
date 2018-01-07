@@ -8,14 +8,15 @@ source:
 # 1(Mon) to 7(Sun)
 startWeek: 1
 
-eventPatterns:
-  -
-    category: private
-    name: sleep
-    s: 寝[たる]
-    e: 起きた
+eventDetector:
+  patterns:
+    -
+      category: private
+      name: sleep
+      s: 寝[たる]
+      e: 起きた
 
-  -
-    category: work
-    name: work
-    e: ^(my-project)
+    -
+      category: work
+      name: work
+      e: ^(my-project)

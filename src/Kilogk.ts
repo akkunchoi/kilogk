@@ -6,6 +6,8 @@ import * as yaml from "js-yaml";
 import { DailyLogFactory } from "./DailyLogFactory";
 import { DailyLog } from "./DailyLog";
 import { DailyFile } from "./DailyFile";
+import { EventDetector } from "./EventDetector";
+import { EventAnalyzer } from "./EventAnalyzer";
 
 const debug = require("debug")("kilogk");
 
@@ -17,6 +19,10 @@ export default function (): Promise<any> {
       format: string;
     };
     startWeek: number; // 1-7 @see https://momentjs.com/docs/#/get-set/iso-weekday/
+    eventDetector: {
+    };
+    eventAnalyzer: {
+    };
   }
 
   type Week = Date[];
@@ -40,10 +46,13 @@ export default function (): Promise<any> {
       const logs = files
         .map((file) => this.parse(file))
         .filter((file) => file);
-      console.log(logs);
 
-      // detect events
-      // analyze events
+      const eventDetector = new EventDetector(this.config.eventDetector);
+      const events = eventDetector.detect(logs);
+
+      const eventAnalyzer = new EventAnalyzer(this.config.eventAnalyzer);
+      eventAnalyzer.analyze(events);
+
     }
     
     createWeek(firstDay: Date = new Date()): Week {
