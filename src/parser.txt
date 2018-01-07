@@ -1,5 +1,16 @@
 // kilogk PEG for https://pegjs.org/online
 
+/** sample data
+
+log 2018-01-07
+
+* hoge
+
+02:02 い
+1 あ
+
+*/
+
 Term
   = head:Line tail:(_ Line)* {
     return tail.reduce(function(s, v) {

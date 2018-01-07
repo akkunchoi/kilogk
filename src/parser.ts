@@ -160,7 +160,7 @@ module.exports = /*
         peg$c4 = "log",
         peg$c5 = peg$literalExpectation("log", false),
         peg$c6 = function(chars) {
-            return {type: 'event', chars}
+            return {type: 'daily', chars}
           },
         peg$c7 = "*",
         peg$c8 = peg$literalExpectation("*", false),
@@ -388,7 +388,7 @@ module.exports = /*
       if (s0 === peg$FAILED) {
         s0 = peg$parseHeader();
         if (s0 === peg$FAILED) {
-          s0 = peg$parseEvent();
+          s0 = peg$parseDaily();
           if (s0 === peg$FAILED) {
             s0 = peg$currPos;
             s1 = peg$parseLineSeparator();
@@ -482,11 +482,11 @@ module.exports = /*
       return s0;
     }
 
-    function peg$parseEvent() {
+    function peg$parseDaily() {
       var s0, s1, s2, s3, s4;
 
       s0 = peg$currPos;
-      s1 = peg$parseEventKeyword();
+      s1 = peg$parseDailyKeyword();
       if (s1 !== peg$FAILED) {
         s2 = peg$parseSpace();
         if (s2 !== peg$FAILED) {
@@ -517,7 +517,7 @@ module.exports = /*
       return s0;
     }
 
-    function peg$parseEventKeyword() {
+    function peg$parseDailyKeyword() {
       var s0;
 
       if (input.charCodeAt(peg$currPos) === 42) {
