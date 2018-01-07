@@ -33,7 +33,7 @@ Record
 }
 
 Header
-  = HeaderKeyword Space date:DateFormat {
+  = HeaderKeyword Space date:DateFormat _ {
   return {type: 'header', date}
 }
 
