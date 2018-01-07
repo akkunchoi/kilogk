@@ -1,0 +1,21 @@
+# -*- coding: utf-8 -*-
+
+source:
+  path: "/path/to/dir/"
+  filename: "log %date%.txt"
+  format: "YYYY-MM-DD"
+
+# 1(Mon) to 7(Sun)
+startWeek: 1
+
+eventPatterns:
+  -
+    category: private
+    name: sleep
+    s: 寝[たる]
+    e: 起きた
+
+  -
+    category: work
+    name: work
+    e: ^(my-project)

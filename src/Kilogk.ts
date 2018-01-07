@@ -1,10 +1,13 @@
 import * as fs from "fs-extra";
 import * as moment from "moment";
 import * as _ from "lodash";
+import * as yaml from "js-yaml";
 
 import { DailyLogFactory } from "./DailyLogFactory";
 import { DailyLog } from "./DailyLog";
 import { DailyFile } from "./DailyFile";
+
+const debug = require("debug")("kilogk");
 
 export default function (): Promise<any> {
   interface KilogkConfig {
@@ -13,7 +16,7 @@ export default function (): Promise<any> {
       filename: string;
       format: string;
     };
-    startWeek: number;
+    startWeek: number; // 1-7 @see https://momentjs.com/docs/#/get-set/iso-weekday/
   }
 
   type Week = Date[];
@@ -39,6 +42,8 @@ export default function (): Promise<any> {
         .filter((file) => file);
       console.log(logs);
 
+      // detect events
+      // analyze events
     }
     
     createWeek(firstDay: Date = new Date()): Week {
@@ -78,15 +83,18 @@ export default function (): Promise<any> {
 
   }
 
-  const kilogk = new Kilogk({
-    source: {
-      path: "/Users/akiyoshi/Library/Application Support/Notational Data/",
-      filename: "log %date%.txt",
-      format: "YYYY-MM-DD"
-    },
-    startWeek: 1
+  const configPath = process.env.KK_CONFIG || "./config/config.yml";
+
+  return fs.readFile(configPath, "utf-8").then((result: string) => {
+    const doc = yaml.safeLoad(result);
+
+    debug("config", doc);
+
+    const kilogk = new Kilogk(doc);
+
+    return kilogk.start();
+
   });
 
-  return kilogk.start();
 }
 
