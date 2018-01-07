@@ -4,6 +4,7 @@ import * as _ from "lodash";
 
 import { DailyLogFactory } from "./DailyLogFactory";
 import { DailyLog } from "./DailyLog";
+import { DailyFile } from "./DailyFile";
 
 export default function (): Promise<any> {
   interface KilogkConfig {
@@ -16,11 +17,6 @@ export default function (): Promise<any> {
   }
 
   type Week = Date[];
-
-  class DailyFile {
-    constructor(public date: Date, public raw?: string) {
-    }
-  }
 
   class Event {
 
@@ -70,13 +66,13 @@ export default function (): Promise<any> {
       return Promise.all(recordPromises);
     }
 
-    parse(dayFile: DailyFile): DailyLog {
+    parse(dailyFile: DailyFile): DailyLog {
       const factory = new DailyLogFactory();
 
       try {
-        return factory.build(dayFile.raw);
+        return factory.build(dailyFile);
       } catch (err) {
-        console.warn(err, dayFile);
+        console.warn(err, dailyFile);
       }
     }
 

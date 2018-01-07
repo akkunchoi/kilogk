@@ -5,6 +5,7 @@ import { DailyLog } from "./DailyLog";
 import * as moment from "moment";
 import { Record } from "./Record";
 import * as _ from "lodash";
+import { DailyFile } from "./DailyFile";
 
 type LexicalParsedLine = {
   type: string,
@@ -29,10 +30,12 @@ export class DailyLogFactory {
   constructor() {
 
   }
-  build(text: string): DailyLog {
+  build(dailyFile: DailyFile): DailyLog {
 
-    if (text.length === 0) {
-      throw new DailyLogParseError();
+    const text = dailyFile.raw;
+
+    if (!text || text.length === 0) {
+      return new DailyLog(dailyFile.date, [], []);
     }
 
     const parsed = this.lexer(text);
