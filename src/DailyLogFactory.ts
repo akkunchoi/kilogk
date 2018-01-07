@@ -1,11 +1,12 @@
-const parser = require("./parser");
-
 import { DailyRecord } from "./DailyRecord";
 import { DailyLog } from "./DailyLog";
 import * as moment from "moment";
 import { Record } from "./Record";
 import * as _ from "lodash";
 import { DailyFile } from "./DailyFile";
+
+const peg = require("pegjs");
+const parser = peg.generate(require("./peg"));
 
 type LexicalParsedLine = {
   type: string,

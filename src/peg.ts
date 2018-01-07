@@ -1,7 +1,5 @@
-// kilogk PEG for https://pegjs.org/online
-
-/** sample data
-
+// ref: https://pegjs.org/online
+/* sample data
 ----------------------------------------
 log 2018-01-07
 
@@ -12,64 +10,64 @@ log 2018-01-07
 
 ignore
 ----------------------------------------
-
 */
 
+module.exports = `
 Term
   = head:Line tail:(_ Line)* {
-    return tail.reduce(function(s, v) {
-       if (v) {
-         s.push(v[1]);
-       }
-        return s;
-    }, [head])
-  }
+  return tail.reduce(function(s, v) {
+    if (v) {
+      s.push(v[1]);
+    }
+    return s;
+  }, [head])
+}
 
 Line
   = Record / Header / Daily / Ignore / LineSeparator {
-  }
+}
 
 Record
   = time:TimeFormat Space chars:Char _ {
-      return {type: 'record', time, chars}
-  }
+  return {type: 'record', time, chars}
+}
 
 Header
   = HeaderKeyword Space date:DateFormat {
-    return {type: 'header', date}
-  }
+  return {type: 'header', date}
+}
 
 HeaderKeyword = "log"
 
 Daily
   = DailyKeyword Space chars:Char _ {
-    return {type: 'daily', chars}
-  }
+  return {type: 'daily', chars}
+}
 
 DailyKeyword = "*"
 
 TimeFormat
   = hour:Integer TimeSeparator minute:Integer {
-    return {hour, minute}
-  } / hour:Integer {
-    return {hour}
-  }
+  return {hour, minute}
+} / hour:Integer {
+return {hour}
+}
 
 DateFormat
   = year:Integer DateSeparator month:Integer DateSeparator day:Integer {
-    return {year, month, day}
-  }
+  return {year, month, day}
+}
 
 Ignore
   = chars:Char _ {
-    return {type: "ignore", chars}
-  }
+  return {type: "ignore", chars}
+}
 
 Integer
   = [0-9]+ { return text() }
 
 Char
-  = [^\n\r]+ {return text() }
+  = [^\\n\\r]+ {return text() }
 
 Space
   = [ ]+
@@ -84,4 +82,4 @@ _ "line separator"
   = LineSeparator*
 
 LineSeparator
-  = [\n\r]
+  = [\\n\\r]`;
