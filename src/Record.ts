@@ -21,4 +21,7 @@ export class Record {
   get text(): string {
     return this._text;
   }
+  get datetime(): Date {
+    return this._datetime;
+  }
 }

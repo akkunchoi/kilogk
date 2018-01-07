@@ -3,6 +3,7 @@ import { Record } from "./Record";
 import { Event } from "./Event";
 import { EventPattern } from "./EventPattern";
 import * as _ from "lodash";
+import { EventPatternType } from "./EventPatternType";
 
 export class EventDetector {
   constructor(private config: any) {
@@ -69,12 +70,14 @@ export class EventDetector {
         })
         .forEach((pattern) => {
 
-          const matched = matchedStartPatternRecords.find((pr) => pr.pattern === pattern);
-          if (matched) {
-            // 開始特定期間イベントの場合
-            events.push(new Event(matched.pattern, record, matched.record));
-            _.pull(matchedStartPatternRecords, matched);
-          } else {
+          if (pattern.type === EventPatternType.START_DEFINITE) {
+            const matched = matchedStartPatternRecords.find((pr) => pr.pattern === pattern);
+            if (matched) {
+              // 開始特定期間イベントの場合
+              events.push(new Event(matched.pattern, record, matched.record));
+              _.pull(matchedStartPatternRecords, matched);
+            }
+          } else if (pattern.type === EventPatternType.START_GUESS) {
             // 開始推定期間イベント
             events.push(new Event(pattern, record, lastRecord));
           }

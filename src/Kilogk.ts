@@ -50,7 +50,7 @@ export default function (): Promise<any> {
       const eventDetector = new EventDetector(this.config.eventDetector);
       const events = eventDetector.detect(logs);
 
-      const eventAnalyzer = new EventAnalyzer(this.config.eventAnalyzer);
+      const eventAnalyzer = new EventAnalyzer(eventDetector, this.config.eventAnalyzer);
       eventAnalyzer.analyze(events);
 
     }
