@@ -11,86 +11,154 @@ import { EventAnalyzer } from "./EventAnalyzer";
 
 const debug = require("debug")("kilogk");
 
-export default function (): Promise<any> {
-  interface KilogkConfig {
-    source: {
-      path: string;
-      filename: string;
-      format: string;
-    };
-    startWeek: number; // 1-7 @see https://momentjs.com/docs/#/get-set/iso-weekday/
-    eventDetector: {
-    };
-    eventAnalyzer: {
-    };
+interface KilogkRunOption {
+  year: string | undefined;
+  month: string | undefined;
+  week: string | undefined;
+}
+
+interface KilogkConfig {
+  source: {
+    path: string;
+    filename: string;
+    format: string;
+  };
+  startWeek: number; // 1-7 @see https://momentjs.com/docs/#/get-set/iso-weekday/
+  eventDetector: {
+  };
+  eventAnalyzer: {
+  };
+}
+
+type TargetDate = Date[];
+
+
+class Kilogk {
+  constructor(private config: KilogkConfig) {
+
   }
 
-  type Week = Date[];
+  async start(runOption: KilogkRunOption): Promise<any> {
 
-  class Event {
+    const date = this.createTargetDates(runOption);
+    console.log(date);
+
+    // return this.hoge();
+  }
+  async hoge(): Promise<any> {
+
+    const week = this.createWeek();
+    const files = await this.loadFiles(week);
+
+    const logs = files
+      .map((file) => this.parse(file))
+      .filter((file) => file);
+
+    const eventDetector = new EventDetector(this.config.eventDetector);
+    const events = eventDetector.detect(logs);
+
+    const eventAnalyzer = new EventAnalyzer(eventDetector, this.config.eventAnalyzer);
+    eventAnalyzer.analyze(events);
 
   }
 
-  class Kilogk {
-    constructor(private config: KilogkConfig) {
+  decideTargetYear(runOption: KilogkRunOption): number {
 
+    if (runOption.year) {
+      return parseInt(runOption.year, 10);
+    } else {
+      return moment().get("year");
     }
 
-    async start(): Promise<any> {
-      return this.hoge();
-    }
-    async hoge(): Promise<any> {
-      const week = this.createWeek();
-      const files = await this.loadFiles(week);
+  }
 
-      const logs = files
-        .map((file) => this.parse(file))
-        .filter((file) => file);
+  createTargetDates(runOption: KilogkRunOption): Date[] {
 
-      const eventDetector = new EventDetector(this.config.eventDetector);
-      const events = eventDetector.detect(logs);
+    const targetDateStartYear = this.decideTargetYear(runOption);
+    let first: Date;
+    let mode: ("year"|"month"|"week") = "year";
 
-      const eventAnalyzer = new EventAnalyzer(eventDetector, this.config.eventAnalyzer);
-      eventAnalyzer.analyze(events);
-
-    }
-    
-    createWeek(firstDay: Date = new Date()): Week {
-      const lastMonday = moment(firstDay).startOf("week").isoWeekday(this.config.startWeek);
-      return [0, 1, 2, 3, 4, 5, 6, 7].map((number: number) => {
-        return lastMonday.clone().add(number, "days").toDate();
-      });
-    }
-    
-    async loadFiles(week: Week): Promise<DailyFile[]> {
-      const recordPromises = week.map((date) => {
-        const path = this.config.source.path;
-        const filename = this.config.source.filename;
-        const filepath = path + filename.replace("%date%", moment(date).format(this.config.source.format));
-        
-        return fs.ensureFile(filepath).then(() => {
-          return fs.readFile(filepath, "utf-8").then((result: string) => {
-            return new DailyFile(date, result);
-          });
-        }, () => {
-          return new DailyFile(date);
-        });
-      });
-      
-      return Promise.all(recordPromises);
+    // 何も指定していない場合は先週
+    if (!runOption.year && !runOption.month && !runOption.week) {
+      runOption.week = "last";
     }
 
-    parse(dailyFile: DailyFile): DailyLog {
-      const factory = new DailyLogFactory();
+    if (runOption.month) {
+      const month = parseInt(runOption.month, 10) - 1;
+      first = moment([targetDateStartYear, month, 1]).toDate();
+      mode = "month";
+    } else if (runOption.year) {
+      first = moment([targetDateStartYear, 0, 1]).toDate();
+    }
 
-      try {
-        return factory.build(dailyFile);
-      } catch (err) {
-        console.warn(err, dailyFile);
+    if (runOption.week) {
+      if (runOption.week === "last") {
+        first = moment()
+          .isoWeekday(this.config.startWeek)
+          .subtract(1, "week")
+          .startOf("week")
+          .toDate();
+      } else {
+        first = moment([targetDateStartYear])
+          .isoWeek(parseInt(runOption.week, 10))
+          .toDate();
       }
+      mode = "week";
     }
 
+    const d: moment.Moment = moment(first);
+    const to: Date = moment(first).add(1, mode).toDate();
+    const targetDates: Date[] = [];
+    while (true) {
+      targetDates.push(d.toDate());
+      d.add(1, "day");
+      if (d.isAfter(to)) break;
+    }
+    return targetDates;
   }
+
+
+  createWeek(firstDay: Date = new Date()): TargetDate {
+    const lastMonday = moment(firstDay).startOf("week").isoWeekday(this.config.startWeek);
+    return [-1, 0, 1, 2, 3, 4, 5, 6, 7].map((number: number) => {
+      return lastMonday.clone().add(number, "days").toDate();
+    });
+  }
+
+
+
+  async loadFiles(week: TargetDate): Promise<DailyFile[]> {
+    const recordPromises = week.map((date) => {
+      const path = this.config.source.path;
+      const filename = this.config.source.filename;
+      const filepath = path + filename.replace("%date%", moment(date).format(this.config.source.format));
+
+      return fs.ensureFile(filepath).then(() => {
+        return fs.readFile(filepath, "utf-8").then((result: string) => {
+          return new DailyFile(date, result);
+        });
+      }, () => {
+        return new DailyFile(date);
+      });
+    });
+
+    return Promise.all(recordPromises);
+  }
+
+  parse(dailyFile: DailyFile): DailyLog {
+    const factory = new DailyLogFactory();
+
+    try {
+      return factory.build(dailyFile);
+    } catch (err) {
+      console.warn(err, dailyFile);
+    }
+  }
+
+}
+
+
+export default function (runOption: any): Promise<any> {
 
   const configPath = process.env.KK_CONFIG || "./config/config.yml";
 
@@ -101,7 +169,11 @@ export default function (): Promise<any> {
 
     const kilogk = new Kilogk(doc);
 
-    return kilogk.start();
+    return kilogk.start({
+      year: runOption.year,
+      month: runOption.month,
+      week: runOption.week,
+    });
 
   });
 
