@@ -1,4 +1,4 @@
-import { EventPatternType } from "./EventPatternType";
+import { EventPatternType, TimeSpan } from "./types";
 
 export class EventPattern {
   private _start: RegExp;
@@ -8,6 +8,8 @@ export class EventPattern {
   private _category: String;
   private _type: EventPatternType;
   private _total: boolean;
+  private _within: TimeSpan;
+  private _withinInverse: boolean;
 
   constructor(patternObj: any) {
 
@@ -34,8 +36,14 @@ export class EventPattern {
       this._type = EventPatternType.ALL_DAY;
     }
 
-    if (patternObj.total) {
+    if ("total" in patternObj) {
       this._total = patternObj.total;
+    }
+    if (patternObj.within) {
+      this._within = patternObj.within;
+    }
+    if (patternObj.withinInverse) {
+      this._withinInverse = patternObj.withinInverse;
     }
   }
 
@@ -65,5 +73,11 @@ export class EventPattern {
 
   get total(): boolean {
     return this._total;
+  }
+  get within(): TimeSpan {
+    return this._within;
+  }
+  get withinInverse(): boolean {
+    return this._withinInverse;
   }
 }

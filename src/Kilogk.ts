@@ -40,15 +40,8 @@ class Kilogk {
 
   async start(runOption: KilogkRunOption): Promise<any> {
 
-    const date = this.createTargetDates(runOption);
-    console.log(date);
-
-    // return this.hoge();
-  }
-  async hoge(): Promise<any> {
-
-    const week = this.createWeek();
-    const files = await this.loadFiles(week);
+    const dates = this.createTargetDates(runOption);
+    const files = await this.loadFiles(dates);
 
     const logs = files
       .map((file) => this.parse(file))
@@ -58,7 +51,7 @@ class Kilogk {
     const events = eventDetector.detect(logs);
 
     const eventAnalyzer = new EventAnalyzer(eventDetector, this.config.eventAnalyzer);
-    eventAnalyzer.analyze(events);
+    eventAnalyzer.analyze(dates, events);
 
   }
 
@@ -116,16 +109,6 @@ class Kilogk {
     }
     return targetDates;
   }
-
-
-  createWeek(firstDay: Date = new Date()): TargetDate {
-    const lastMonday = moment(firstDay).startOf("week").isoWeekday(this.config.startWeek);
-    return [-1, 0, 1, 2, 3, 4, 5, 6, 7].map((number: number) => {
-      return lastMonday.clone().add(number, "days").toDate();
-    });
-  }
-
-
 
   async loadFiles(week: TargetDate): Promise<DailyFile[]> {
     const recordPromises = week.map((date) => {
