@@ -9,6 +9,7 @@ export class EventAnalyzer {
   }
   analyze(events: Event[]) {
     // TODO: MARKイベントは件数カウントにしたい
+    // TODO: 全日イベントはそのまま表示したい
 
     const patterns = this.eventDetector.getPatterns();
     const categories = _.groupBy(patterns, (pattern) => pattern.category);

@@ -5,12 +5,13 @@ import * as yaml from "js-yaml";
 
 const debug = require("debug")("kilogk");
 
+import { Record } from "./Record";
 import { DailyLogFactory } from "./DailyLogFactory";
 import { DailyLog } from "./DailyLog";
 import { DailyFile } from "./DailyFile";
 import { EventDetector } from "./EventDetector";
 import { EventAnalyzer } from "./EventAnalyzer";
-import { KilogkConfig, KilogkRunOption, TargetDate } from "./types";
+import { KilogkConfig, KilogkRunOption, RecordType, TargetDate } from "./types";
 import { DailyFileRepository } from "./DailyFileRepository";
 import { ConfigRepository } from "./ConfigRepository";
 
@@ -30,8 +31,18 @@ export class Controller {
       .map((file) => this.parse(file))
       .filter((file) => file);
 
+    // 睡眠時間計測のために前日の最後のレコードを取得する
+    const prevDate = moment(_.first(dates)).subtract(1, "day").toDate();
+    const prevFiles = await this.dailyFileRepository.load([prevDate]);
+    const prevLog = this.parse(prevFiles[0]);
+    const prevRecords = _.filter(prevLog.records, (r: Record) => {
+      return r.type === RecordType.TIMELY;
+    });
+    const prevLogLastOnly = new DailyLog(prevDate, [_.last(prevRecords)]);
+    const targetLogs = [].concat([prevLogLastOnly]).concat(logs);
+
     const eventDetector = new EventDetector(this.config.eventDetector);
-    const result = eventDetector.detect(logs);
+    const result = eventDetector.detect(targetLogs);
 
     console.log("TargetDates: ");
     console.log(
