@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import * as moment from "moment";
 import * as _ from "lodash";
 import * as fs from "fs-extra";
@@ -11,29 +13,37 @@ import { DailyLog } from "./DailyLog";
 import { DailyFile } from "./DailyFile";
 import { EventDetector } from "./EventDetector";
 import { EventAnalyzer } from "./EventAnalyzer";
-import { KilogkConfig, KilogkRunOption, RecordType, TargetDate } from "./types";
+import { DailyFileRepositoryConfig, KilogkConfig, KilogkRunOption, RecordType, Symbols, TargetDate } from "./types";
 import { DailyFileRepository } from "./DailyFileRepository";
 import { ConfigRepository } from "./ConfigRepository";
 
+import { Container } from "inversify";
+
 export class Controller {
   private dailyFileRepository: DailyFileRepository;
+  private container: Container;
 
   constructor(private config: KilogkConfig) {
-    this.dailyFileRepository = new DailyFileRepository(this.config.source);
+
+    this.container = new Container();
+    this.container.bind<KilogkConfig>(Symbols.KilogkConfig).toConstantValue(config);
+    this.container.bind<DailyFileRepositoryConfig>(Symbols.DailyFileRepositoryConfig).toConstantValue(config.source);
+    this.container.bind<DailyFileRepository>(DailyFileRepository).toSelf();
   }
 
   async start(runOption: KilogkRunOption): Promise<any> {
+    const dailyFileRepository = this.container.get<DailyFileRepository>(DailyFileRepository);
 
     const dates = this.createTargetDates(runOption);
-    const files = await this.dailyFileRepository.load(dates);
+    const files = await dailyFileRepository.load(dates);
 
     const logs = files
-      .map((file) => this.parse(file))
-      .filter((file) => file);
+      .map((file: DailyFile) => this.parse(file))
+      .filter((log: DailyLog) => log);
 
     // 睡眠時間計測のために前日の最後のレコードを取得する
     const prevDate = moment(_.first(dates)).subtract(1, "day").toDate();
-    const prevFiles = await this.dailyFileRepository.load([prevDate]);
+    const prevFiles = await dailyFileRepository.load([prevDate]);
     const prevLog = this.parse(prevFiles[0]);
     const prevRecords = _.filter(prevLog.records, (r: Record) => {
       return r.type === RecordType.TIMELY;

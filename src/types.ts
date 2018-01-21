@@ -46,3 +46,9 @@ export enum RecordType {
   TIMELY = "TIMELY",
   DAILY = "DAILY"
 }
+
+export const Symbols = {
+  KilogkConfig: Symbol("KilogkConfig"),
+  DailyFileRepositoryConfig: Symbol("DailyFileRepositoryConfig")
+};
+

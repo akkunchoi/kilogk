@@ -1,11 +1,14 @@
+import { inject, injectable } from "inversify";
+
 import { DailyFile } from "./DailyFile";
 import * as fs from "fs-extra";
 import * as moment from "moment";
-import { DailyFileRepositoryConfig, TargetDate } from "./types";
+import { DailyFileRepositoryConfig, Symbols, TargetDate } from "./types";
 
+@injectable()
 export class DailyFileRepository {
 
-  constructor(private config: DailyFileRepositoryConfig) {
+  constructor(@inject(Symbols.DailyFileRepositoryConfig) private config: DailyFileRepositoryConfig) {
   }
 
   async load(week: TargetDate): Promise<DailyFile[]> {
