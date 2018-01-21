@@ -45,7 +45,7 @@ export class Event {
     if (this._start && this._start.datetime && this._end && this._end.datetime) {
       return this._end.datetime.getTime() - this._start.datetime.getTime();
     } else {
-      console.warn("no datetime", this);
+      // console.warn("no datetime", this);
       return 0;
     }
   }

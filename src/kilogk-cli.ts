@@ -17,5 +17,9 @@ dotenv.config({ path: ".env" });
 
 const argv = minimist(process.argv.slice(2));
 
-import kilogk from "./Kilogk";
-kilogk(argv);
+import { Controller } from "./Controller";
+Controller.fromArgv(argv).then(() => {
+  console.log("Done.");
+}).catch((err) => {
+  console.error(err);
+});
