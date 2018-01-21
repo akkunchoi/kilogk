@@ -50,7 +50,7 @@ log 2017-01-01
     });
     it("アノテーションテキスト", () => {
       expect(records[4].text).toBe("aaa");
-      expect(records[4].datetime).toBeUndefined();
+      expect(records[4].datetime).toEqual(new Date(2017, 0, 1));
     });
 
   });
@@ -94,7 +94,7 @@ log 2017-01-01
     });
     it("アノテーションテキスト", () => {
       expect(records[4].text).toBe("aaa");
-      expect(records[4].datetime).toBeUndefined();
+      expect(records[4].datetime).toEqual(new Date(2017, 0, 1));
     });
 
   });
