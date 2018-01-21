@@ -13,13 +13,11 @@ export class EventDetector {
     return this.config.patterns.map((patternObj: any) => new EventPattern(patternObj));
   }
 
-  detect(logs: DailyLog[]) {
+  detect(logs: DailyLog[]): Event[] {
 
     const records = logs.reduce((records: Record[], log: DailyLog) => {
       return records.concat(log.records);
     }, []);
-
-    // TODO 重複の検出
 
     const patterns = this.getPatterns();
 

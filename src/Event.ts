@@ -5,11 +5,20 @@ import moment = require("moment");
 import * as _ from "lodash";
 
 export class Event {
+  constructor(private _pattern: EventPattern, private _end: Record, private _start?: Record) {
+
+  }
+
   get pattern(): EventPattern {
     return this._pattern;
   }
-  constructor(private _pattern: EventPattern, private end: Record, private start?: Record) {
 
+  get end(): Record {
+    return this._end;
+  }
+
+  get start(): Record {
+    return this._start;
   }
 
   get elapsed(): number {
@@ -33,8 +42,8 @@ export class Event {
   }
 
   getElapsed() {
-    if (this.start && this.start.datetime && this.end && this.end.datetime) {
-      return this.end.datetime.getTime() - this.start.datetime.getTime();
+    if (this._start && this._start.datetime && this._end && this._end.datetime) {
+      return this._end.datetime.getTime() - this._start.datetime.getTime();
     } else {
       console.warn("no datetime", this);
       return 0;
@@ -56,23 +65,23 @@ export class Event {
      *
      */
 
-    const startHour = moment(this.start.datetime).get("hour");
+    const startHour = moment(this._start.datetime).get("hour");
     const prevDayFlag = startHour < within.to.hour;
-    const ws = moment(this.start.datetime)
+    const ws = moment(this._start.datetime)
       .startOf("day")
       .set("hour", within.from.hour)
       .subtract(prevDayFlag ? 1 : 0, "day")
       .toDate();
     
     const nextDayFlag = within.from.hour > within.to.hour;
-    const we = moment(this.start.datetime)
+    const we = moment(this._start.datetime)
       .startOf("day")
       .set("hour", within.to.hour)
       .add(nextDayFlag && !prevDayFlag ? 1 : 0, "day")
       .toDate();
 
-    const from = moment.max(moment(this.start.datetime), moment(ws));
-    const to = moment.min(moment(this.end.datetime), moment(we));
+    const from = moment.max(moment(this._start.datetime), moment(ws));
+    const to = moment.min(moment(this._end.datetime), moment(we));
 
     if (from.isBefore(to)) {
 
