@@ -70,13 +70,16 @@ export class Controller {
     if (runOption.week) {
       if (runOption.week === "last") {
         first = moment()
-          .isoWeekday(this.config.startWeek)
+          .startOf("day")
           .subtract(1, "week")
-          .startOf("week")
+          .isoWeekday(this.config.startWeek)
           .toDate();
       } else {
-        first = moment([targetDateStartYear])
-          .isoWeek(parseInt(runOption.week, 10))
+        const weekNumber = parseInt(runOption.week, 10);
+        first = moment([targetDateStartYear, 0, 1])
+          .add(1, "week")
+          .isoWeek(weekNumber)
+          .isoWeekday(this.config.startWeek)
           .toDate();
       }
       mode = "week";
@@ -88,7 +91,7 @@ export class Controller {
     while (true) {
       targetDates.push(d.toDate());
       d.add(1, "day");
-      if (d.isAfter(to)) break;
+      if (d.isSameOrAfter(to)) break;
     }
     return targetDates;
   }
