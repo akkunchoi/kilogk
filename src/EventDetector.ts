@@ -3,7 +3,8 @@ import { Record } from "./Record";
 import { Event } from "./Event";
 import { EventPattern } from "./EventPattern";
 import * as _ from "lodash";
-import { EventPatternType, RecordType } from "./types";
+import { EventDetectorConfig, EventPatternType, RecordType, Symbols } from "./types";
+import { inject, injectable } from "inversify";
 
 class IsolationRecords {
 
@@ -26,8 +27,9 @@ class IsolationRecords {
   }
 }
 
+@injectable()
 export class EventDetector {
-  constructor(private config: any) {
+  constructor(@inject(Symbols.EventDetectorConfig) private config: EventDetectorConfig) {
 
   }
   getPatterns(): EventPattern[] {

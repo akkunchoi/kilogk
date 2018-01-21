@@ -1,5 +1,3 @@
-import { DailyFileRepository } from "./DailyFileRepository";
-
 export interface TimeSpan {
   from: {
     hour: number;
@@ -31,11 +29,26 @@ export interface DailyFileRepositoryConfig {
   format: string;
 }
 
+export type EventDetectorConfig = {
+  patterns: [
+    {
+      category: string,
+      name: string,
+      a: string,
+      s: string,
+      e: string,
+      m: string,
+      total: boolean,
+      withinInverse: boolean,
+      within: TimeSpan,
+    }
+  ]
+};
+
 export interface KilogkConfig {
   source: DailyFileRepositoryConfig;
   startWeek: number; // 1-7 @see https://momentjs.com/docs/#/get-set/iso-weekday/
-  eventDetector: {
-  };
+  eventDetector: EventDetectorConfig;
   eventAnalyzer: {
   };
 }
@@ -49,6 +62,7 @@ export enum RecordType {
 
 export const Symbols = {
   KilogkConfig: Symbol("KilogkConfig"),
-  DailyFileRepositoryConfig: Symbol("DailyFileRepositoryConfig")
+  DailyFileRepositoryConfig: Symbol("DailyFileRepositoryConfig"),
+  EventDetectorConfig: Symbol("EventDetectorConfig")
 };
 

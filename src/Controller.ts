@@ -13,7 +13,10 @@ import { DailyLog } from "./DailyLog";
 import { DailyFile } from "./DailyFile";
 import { EventDetector } from "./EventDetector";
 import { EventAnalyzer } from "./EventAnalyzer";
-import { DailyFileRepositoryConfig, KilogkConfig, KilogkRunOption, RecordType, Symbols, TargetDate } from "./types";
+import {
+  DailyFileRepositoryConfig, EventDetectorConfig, KilogkConfig, KilogkRunOption, RecordType, Symbols,
+  TargetDate
+} from "./types";
 import { DailyFileRepository } from "./DailyFileRepository";
 import { ConfigRepository } from "./ConfigRepository";
 
@@ -28,7 +31,10 @@ export class Controller {
     this.container = new Container();
     this.container.bind<KilogkConfig>(Symbols.KilogkConfig).toConstantValue(config);
     this.container.bind<DailyFileRepositoryConfig>(Symbols.DailyFileRepositoryConfig).toConstantValue(config.source);
+    this.container.bind<EventDetectorConfig>(Symbols.EventDetectorConfig).toConstantValue(config.eventDetector);
     this.container.bind<DailyFileRepository>(DailyFileRepository).toSelf();
+    this.container.bind<EventDetector>(EventDetector).toSelf();
+    this.container.bind<EventAnalyzer>(EventAnalyzer).toSelf();
   }
 
   async start(runOption: KilogkRunOption): Promise<any> {
@@ -51,7 +57,7 @@ export class Controller {
     const prevLogLastOnly = new DailyLog(prevDate, [_.last(prevRecords)]);
     const targetLogs = [].concat([prevLogLastOnly]).concat(logs);
 
-    const eventDetector = new EventDetector(this.config.eventDetector);
+    const eventDetector = this.container.get<EventDetector>(EventDetector);
     const result = eventDetector.detect(targetLogs);
 
     const moreThan20HoursEvents = _.filter(result.events, (event) => {
@@ -80,7 +86,7 @@ export class Controller {
     console.log("");
 
     console.log("Events: ");
-    const eventAnalyzer = new EventAnalyzer(eventDetector, this.config.eventAnalyzer);
+    const eventAnalyzer = this.container.get<EventAnalyzer>(EventAnalyzer);
     eventAnalyzer.analyze(result.events, {outputRecords: runOption.outputRecords});
     console.log("");
 

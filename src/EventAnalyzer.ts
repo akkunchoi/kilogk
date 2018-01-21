@@ -3,9 +3,11 @@ import * as _ from "lodash";
 import { EventDetector } from "./EventDetector";
 import moment = require("moment");
 import { EventPatternType } from "./types";
+import { injectable } from "inversify";
 
+@injectable()
 export class EventAnalyzer {
-  constructor(private eventDetector: EventDetector, private config: any) {
+  constructor(private eventDetector: EventDetector) {
 
   }
   analyze(events: Event[], options?: {outputRecords: boolean}) {
