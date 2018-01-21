@@ -1,4 +1,3 @@
-import { DailyRecord } from "./DailyRecord";
 import { DailyLog } from "./DailyLog";
 import * as moment from "moment";
 import { Record } from "./Record";

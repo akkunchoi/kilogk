@@ -84,20 +84,4 @@ describe("EventDetector", () => {
 
   });
 
-  it("全日イベントにマッチ", () => {
-
-    const events = detector.detect([
-      new DailyLog(new Date(2017, 0, 1), [
-        new Record("woke up and had my breakfast", new Date(2017, 0, 1, 8, 0)),
-        new Record("excercised", new Date(2017, 0, 1, 10, 0)),
-        new Record("studied English", new Date(2017, 0, 1, 12, 0)),
-        new Record("had lunch", new Date(2017, 0, 1, 13, 0)),
-        new Record("studied English", new Date(2017, 0, 1, 18, 0)),
-        new Record("took a bath", new Date(2017, 0, 1, 21, 0)),
-        new Record("slept", new Date(2017, 0, 1, 21, 0)),
-      ])
-    ]);
-
-  });
-
 });

@@ -9,7 +9,7 @@ export class EventPattern {
   private _type: EventPatternType;
   private _total: boolean;
   private _within: TimeSpan;
-  private _withinInverse: boolean;
+  private _withinInverse: boolean = false;
 
   constructor(patternObj: any) {
 

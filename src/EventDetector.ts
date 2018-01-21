@@ -3,7 +3,7 @@ import { Record } from "./Record";
 import { Event } from "./Event";
 import { EventPattern } from "./EventPattern";
 import * as _ from "lodash";
-import { EventPatternType } from "./EventPatternType";
+import { EventPatternType } from "./types";
 
 export class EventDetector {
   constructor(private config: any) {

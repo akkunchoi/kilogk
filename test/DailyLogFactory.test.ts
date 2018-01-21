@@ -29,7 +29,7 @@ log 2017-01-01
       const log = factory.build(file);
       records = log.records;
 
-      expect(records.length).toBe(6);
+      expect(records.length).toBe(5);
     });
 
     it("標準：日時、時、分の読み取り", () => {
