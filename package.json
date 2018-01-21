@@ -18,6 +18,9 @@
     "globals": {
       "__TS_CONFIG__": "tsconfig.json"
     },
+    "setupFiles": [
+      "./test/global.ts"
+    ],
     "moduleFileExtensions": [
       "ts",
       "js"
