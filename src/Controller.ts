@@ -44,6 +44,24 @@ export class Controller {
     const eventDetector = new EventDetector(this.config.eventDetector);
     const result = eventDetector.detect(targetLogs);
 
+    const moreThan20HoursEvents = _.filter(result.events, (event) => {
+      return event.elapsed > 20 * 3600 * 1000;
+    });
+
+    if (moreThan20HoursEvents.length > 0) {
+      console.log("Warning: more than 20 hours");
+      for (const event of moreThan20HoursEvents) {
+        console.log("    " +
+          event.end.text + " " +
+          " [ " +
+          " from " + (event.start ? moment(event.start.datetime).format("MM-DD HH:mm") : "--") +
+          " to " + moment(event.end.datetime).format("MM-DD HH:mm") + " " +
+          " elapsed " + Math.floor(event.elapsed / 1000 / 3600) +
+          " ] "
+        );
+      }
+    }
+
     console.log("TargetDates: ");
     console.log(
       moment(_.first(dates)).format(),
@@ -53,14 +71,16 @@ export class Controller {
 
     console.log("Events: ");
     const eventAnalyzer = new EventAnalyzer(eventDetector, this.config.eventAnalyzer);
-    eventAnalyzer.analyze(result.events);
+    eventAnalyzer.analyze(result.events, {outputRecords: runOption.outputRecords});
     console.log("");
 
-    console.log("Isolations: ");
-    for (const record of result.isolations) {
-      console.log(record.datetime, record.text);
+    if (runOption.outputRecords) {
+      console.log("Isolations: ");
+      for (const record of result.isolations) {
+        console.log(record.datetime, record.text);
+      }
+      console.log("");
     }
-    console.log("");
 
   }
 
@@ -148,6 +168,7 @@ export class Controller {
       year: runOption.year,
       month: runOption.month,
       week: runOption.week,
+      outputRecords: runOption.outputRecords
     });
 
   }

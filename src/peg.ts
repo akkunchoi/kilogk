@@ -70,7 +70,7 @@ Char
   = [^\\n\\r]+ {return text() }
 
 Space
-  = [ ]+
+  = [ 　]+
 
 DateSeparator
   = "-"

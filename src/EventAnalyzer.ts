@@ -8,7 +8,13 @@ export class EventAnalyzer {
   constructor(private eventDetector: EventDetector, private config: any) {
 
   }
-  analyze(events: Event[]) {
+  analyze(events: Event[], options?: {outputRecords: boolean}) {
+
+    options = {
+      outputRecords: false,
+      ...options
+    };
+
     // TODO: MARKイベントは件数カウントにしたい
     // TODO: 全日イベントはそのまま表示したい
 
@@ -25,7 +31,7 @@ export class EventAnalyzer {
 
       const count = events.length;
 
-      return {key, hours, count};
+      return {key, hours, count, events};
 
     });
 
@@ -45,6 +51,28 @@ export class EventAnalyzer {
             console.log("- " + pattern.name + " " + result.count + " #");
           } else {
             console.log("- " + pattern.name + " " + result.hours + " hours.");
+          }
+
+          if (options.outputRecords) {
+            if (pattern.type === EventPatternType.ALL_DAY) {
+              for (const event of result.events) {
+                console.log("    " +
+                  event.end.text
+                );
+              }
+            }
+            if (pattern.type === EventPatternType.START_GUESS || pattern.type === EventPatternType.START_DEFINITE) {
+              for (const event of result.events) {
+                console.log("    " +
+                  event.end.text + " " +
+                  " [ " +
+                  " from " + (event.start ? moment(event.start.datetime).format("MM-DD HH:mm") : "--") +
+                  " to " + moment(event.end.datetime).format("MM-DD HH:mm") + " " +
+                  " elapsed " + Math.floor(event.elapsed / 1000 / 3600) +
+                  " ] "
+                );
+              }
+            }
           }
         }
 

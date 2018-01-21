@@ -42,7 +42,7 @@ describe("EventDetector", () => {
 
     const result = detector.detect([
       new DailyLog(new Date(2017, 0, 1), [
-        new Record("excercised", new Date(2017, 0, 1, 10, 0), RecordType.TIMELY),
+        new Record("excercised", new Date(2017, 0, 1, 10, 0), RecordType.DAILY),
       ])
     ]);
 

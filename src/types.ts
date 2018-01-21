@@ -22,6 +22,7 @@ export interface KilogkRunOption {
   year: string | undefined;
   month: string | undefined;
   week: string | undefined;
+  outputRecords: boolean | undefined;
 }
 
 export interface DailyFileRepositoryConfig {

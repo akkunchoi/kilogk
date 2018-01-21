@@ -58,6 +58,9 @@ export class EventDetector {
       // 全日マッチ
       patterns
         .filter((pattern: EventPattern) => {
+          if (record.type !== RecordType.DAILY) {
+            return false;
+          }
           if (pattern.allDay) {
             if (pattern.allDay.test(record.text)) {
               return true;
@@ -72,6 +75,9 @@ export class EventDetector {
       // マーカーマッチ
       patterns
         .filter((pattern: EventPattern) => {
+          if (record.type !== RecordType.TIMELY) {
+            return false;
+          }
           if (pattern.mark) {
             if (pattern.mark.test(record.text)) {
               return true;
@@ -86,6 +92,9 @@ export class EventDetector {
       // 開始マッチ
       patterns
         .filter((pattern: EventPattern) => {
+          if (record.type !== RecordType.TIMELY) {
+            return false;
+          }
           if (pattern.start) {
             if (pattern.start.test(record.text)) {
               return true;
@@ -102,6 +111,9 @@ export class EventDetector {
       // 終了マッチ
       patterns
         .filter((pattern: EventPattern) => {
+          if (record.type !== RecordType.TIMELY) {
+            return false;
+          }
           if (pattern.end) {
             if (pattern.end.test(record.text)) {
               return true;
