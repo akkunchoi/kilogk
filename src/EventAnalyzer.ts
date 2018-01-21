@@ -2,6 +2,7 @@ import { Event } from "./Event";
 import * as _ from "lodash";
 import { EventDetector } from "./EventDetector";
 import moment = require("moment");
+import { EventPatternType } from "./types";
 
 export class EventAnalyzer {
   constructor(private eventDetector: EventDetector, private config: any) {
@@ -21,7 +22,10 @@ export class EventAnalyzer {
       const sum = _.sumBy(events, (event) => event.elapsed);
 
       const hours = this.formatNumber(sum / 1000 / 3600);
-      return {key, hours};
+
+      const count = events.length;
+
+      return {key, hours, count};
 
     });
 
@@ -37,7 +41,11 @@ export class EventAnalyzer {
           if (pattern.total !== false) {
             total += result.hours;
           }
-          console.log("- " + pattern.name + " " + result.hours + " hours.");
+          if (pattern.type === EventPatternType.MARK) {
+            console.log("- " + pattern.name + " " + result.count + " #");
+          } else {
+            console.log("- " + pattern.name + " " + result.hours + " hours.");
+          }
         }
 
       });
