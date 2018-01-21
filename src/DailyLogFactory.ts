@@ -109,11 +109,14 @@ export class DailyLogFactory {
     let parsed = undefined;
 
     try {
-    } catch (e) {
-      console.warn(e);
-    } finally {
       parsed = parser.parse(str);
+    } catch (e) {
+      console.warn(e.message);
+      parsed = [];
+    } finally {
+
     }
+
     parsed = parsed.filter((line: LexicalParsedLine) => {
       return !!line;
     });

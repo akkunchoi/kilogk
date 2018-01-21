@@ -14,7 +14,7 @@ ignore
 
 module.exports = `
 Term
-  = head:Header tail:(_ Line)* {
+  = _ head:Header tail:(_ Line)* {
   return tail.reduce(function(s, v) {
     if (v) {
       s.push(v[1]);
