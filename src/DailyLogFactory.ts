@@ -44,6 +44,10 @@ export class DailyLogFactory {
     const header = _.find(parsed, {type: "header"});
     const headerDate = this.buildDatetimeFromParsedLine(header);
 
+    if (!headerDate) {
+      return new DailyLog(dailyFile.date, [], []);
+    }
+
     const records = _.filter(parsed, {type: "record"}).map((r) => {
       return new Record(r.chars, this.buildDatetimeFromParsedLine(r, headerDate));
     });
@@ -83,9 +87,12 @@ export class DailyLogFactory {
 
     return new DailyLog(headerDate, records, dailyRecords);
   }
-  buildDatetimeFromParsedLine(line: LexicalParsedLine, baseDate?: Date): Date {
+  protected buildDatetimeFromParsedLine(line: LexicalParsedLine, baseDate?: Date): (Date | undefined) {
     let date: moment.Moment;
 
+    if (!line) {
+      return;
+    }
     if (baseDate) {
       date = moment(baseDate);
     } else if (line.date) {
@@ -98,7 +105,7 @@ export class DailyLogFactory {
 
     return date.toDate();
   }
-  lexer(str: string): LexicalParsed {
+  protected lexer(str: string): LexicalParsed {
     let parsed = undefined;
 
     try {
@@ -107,6 +114,10 @@ export class DailyLogFactory {
     } finally {
       parsed = parser.parse(str);
     }
+    parsed = parsed.filter((line: LexicalParsedLine) => {
+      return !!line;
+    });
+
     return parsed;
   }
 }
