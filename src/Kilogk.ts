@@ -8,30 +8,9 @@ import { DailyLog } from "./DailyLog";
 import { DailyFile } from "./DailyFile";
 import { EventDetector } from "./EventDetector";
 import { EventAnalyzer } from "./EventAnalyzer";
+import { KilogkConfig, KilogkRunOption, TargetDate } from "./types";
 
 const debug = require("debug")("kilogk");
-
-interface KilogkRunOption {
-  year: string | undefined;
-  month: string | undefined;
-  week: string | undefined;
-}
-
-interface KilogkConfig {
-  source: {
-    path: string;
-    filename: string;
-    format: string;
-  };
-  startWeek: number; // 1-7 @see https://momentjs.com/docs/#/get-set/iso-weekday/
-  eventDetector: {
-  };
-  eventAnalyzer: {
-  };
-}
-
-type TargetDate = Date[];
-
 
 class Kilogk {
   constructor(private config: KilogkConfig) {
