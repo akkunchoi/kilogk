@@ -11,7 +11,7 @@ describe("DiaryLogFactory", () => {
   });
 
   describe("ビルドOK 降順の場合", () => {
-    let file: DailyFile;
+    let records: Record[];
     beforeEach(() => {
       const raw = `
 log 2017-01-01
@@ -25,38 +25,38 @@ log 2017-01-01
 
 その他テキスト
     `;
-      file = new DailyFile(new Date(2017, 0, 1), raw);
+      const file = new DailyFile(new Date(2017, 0, 1), raw);
+      const log = factory.build(file);
+      records = log.records;
+
+      expect(records.length).toBe(6);
     });
 
     it("標準：日時、時、分の読み取り", () => {
-      const log = factory.build(file);
-      const records = log.records;
       expect(records[0].text).toBe("起きた");
       expect(records[0].datetime).toEqual(new Date(2017, 0, 1, 9));
     });
     it("分の読み取り", () => {
-      const log = factory.build(file);
-      const records = log.records;
       expect(records[1].text).toBe("朝ごはん");
       expect(records[1].datetime).toEqual(new Date(2017, 0, 1, 10, 30));
     });
     it("分省略", () => {
-      const log = factory.build(file);
-      const records = log.records;
       expect(records[2].text).toBe("昼ごはん");
       expect(records[2].datetime).toEqual(new Date(2017, 0, 1, 12, 0));
     });
     it("日付超える場合", () => {
-      const log = factory.build(file);
-      const records = log.records;
       expect(records[3].text).toBe("寝た");
       expect(records[3].datetime).toEqual(new Date(2017, 0, 2, 1, 0));
+    });
+    it("アノテーションテキスト", () => {
+      expect(records[4].text).toBe("aaa");
+      expect(records[4].datetime).toBeUndefined();
     });
 
   });
 
   describe("ビルドOK 昇順の場合", () => {
-    let file: DailyFile;
+    let records: Record[];
     beforeEach(() => {
       const raw = `
 log 2017-01-01
@@ -70,32 +70,31 @@ log 2017-01-01
 
 その他テキスト
     `;
-      file = new DailyFile(new Date(2017, 0, 1), raw);
+      const file = new DailyFile(new Date(2017, 0, 1), raw);
+      const log = factory.build(file);
+      records = log.records;
+      expect(records.length).toBe(5);
     });
 
     it("標準：日時、時、分の読み取り", () => {
-      const log = factory.build(file);
-      const records = log.records;
       expect(records[0].text).toBe("起きた");
       expect(records[0].datetime).toEqual(new Date(2017, 0, 1, 9));
     });
     it("分の読み取り", () => {
-      const log = factory.build(file);
-      const records = log.records;
       expect(records[1].text).toBe("朝ごはん");
       expect(records[1].datetime).toEqual(new Date(2017, 0, 1, 10, 30));
     });
     it("分省略", () => {
-      const log = factory.build(file);
-      const records = log.records;
       expect(records[2].text).toBe("昼ごはん");
       expect(records[2].datetime).toEqual(new Date(2017, 0, 1, 12, 0));
     });
     it("日付超える場合", () => {
-      const log = factory.build(file);
-      const records = log.records;
       expect(records[3].text).toBe("寝た");
       expect(records[3].datetime).toEqual(new Date(2017, 0, 2, 1, 0));
+    });
+    it("アノテーションテキスト", () => {
+      expect(records[4].text).toBe("aaa");
+      expect(records[4].datetime).toBeUndefined();
     });
 
   });

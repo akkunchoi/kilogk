@@ -36,7 +36,7 @@ export class DailyLogFactory {
     const text = dailyFile.raw;
 
     if (!text || text.length === 0) {
-      return new DailyLog(dailyFile.date, [], []);
+      return new DailyLog(dailyFile.date, []);
     }
 
     const parsed = this.lexer(text);
@@ -45,14 +45,14 @@ export class DailyLogFactory {
     const headerDate = this.buildDatetimeFromParsedLine(header);
 
     if (!headerDate) {
-      return new DailyLog(dailyFile.date, [], []);
+      return new DailyLog(dailyFile.date, []);
     }
 
     const records = _.filter(parsed, {type: "record"}).map((r) => {
       return new Record(r.chars, this.buildDatetimeFromParsedLine(r, headerDate));
     });
     const dailyRecords = _.filter(parsed, {type: "daily"}).map((r) => {
-      return new DailyRecord(r.chars);
+      return new Record(r.chars);
     });
 
     // レコード順序を特定
@@ -85,7 +85,7 @@ export class DailyLogFactory {
       prev = r;
     }
 
-    return new DailyLog(headerDate, records, dailyRecords);
+    return new DailyLog(headerDate, records.concat(dailyRecords));
   }
   protected buildDatetimeFromParsedLine(line: LexicalParsedLine, baseDate?: Date): (Date | undefined) {
     let date: moment.Moment;

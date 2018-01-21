@@ -43,7 +43,6 @@ describe("EventDetector", () => {
     const events = detector.detect([
       new DailyLog(new Date(2017, 0, 1), [
         new Record("excercised", new Date(2017, 0, 1, 10, 0)),
-      ], [
       ])
     ]);
 
@@ -59,7 +58,6 @@ describe("EventDetector", () => {
       new DailyLog(new Date(2017, 0, 1), [
         new Record("slept", new Date(2017, 0, 1, 1, 0)),
         new Record("woke", new Date(2017, 0, 1, 10, 0)),
-      ], [
       ])
     ]);
 
@@ -76,7 +74,6 @@ describe("EventDetector", () => {
       new DailyLog(new Date(2017, 0, 1), [
         new Record("unknown", new Date(2017, 0, 1, 10, 0)),
         new Record("studied English", new Date(2017, 0, 1, 11, 0)),
-      ], [
       ])
     ]);
 
@@ -98,7 +95,6 @@ describe("EventDetector", () => {
         new Record("studied English", new Date(2017, 0, 1, 18, 0)),
         new Record("took a bath", new Date(2017, 0, 1, 21, 0)),
         new Record("slept", new Date(2017, 0, 1, 21, 0)),
-      ], [
       ])
     ]);
 

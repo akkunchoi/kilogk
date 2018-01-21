@@ -2,7 +2,7 @@ import * as moment from "moment";
 
 export class Record {
   private _midnight = false;
-  constructor(private _text: string, private _datetime: Date) {
+  constructor(private _text: string, private _datetime?: Date) {
   }
   compare(r: Record): number {
     if (moment(this._datetime).isAfter(r._datetime)) {
