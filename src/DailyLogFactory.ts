@@ -3,6 +3,7 @@ import * as moment from "moment";
 import { Record } from "./Record";
 import * as _ from "lodash";
 import { DailyFile } from "./DailyFile";
+import { RecordType } from "./types";
 
 const peg = require("pegjs");
 const parser = peg.generate(require("./peg"));
@@ -48,10 +49,10 @@ export class DailyLogFactory {
     }
 
     const records = _.filter(parsed, {type: "record"}).map((r) => {
-      return new Record(r.chars, this.buildDatetimeFromParsedLine(r, headerDate));
+      return new Record(r.chars, this.buildDatetimeFromParsedLine(r, headerDate), RecordType.TIMELY);
     });
     const dailyRecords = _.filter(parsed, {type: "daily"}).map((r) => {
-      return new Record(r.chars);
+      return new Record(r.chars, headerDate, RecordType.DAILY);
     });
 
     // レコード順序を特定

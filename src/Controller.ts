@@ -31,10 +31,25 @@ export class Controller {
       .filter((file) => file);
 
     const eventDetector = new EventDetector(this.config.eventDetector);
-    const events = eventDetector.detect(logs);
+    const result = eventDetector.detect(logs);
 
+    console.log("TargetDates: ");
+    console.log(
+      moment(_.first(dates)).format(),
+      moment(_.last(dates)).format(),
+    );
+    console.log("");
+
+    console.log("Events: ");
     const eventAnalyzer = new EventAnalyzer(eventDetector, this.config.eventAnalyzer);
-    eventAnalyzer.analyze(dates, events);
+    eventAnalyzer.analyze(result.events);
+    console.log("");
+
+    console.log("Isolations: ");
+    for (const record of result.isolations) {
+      console.log(record.datetime, record.text);
+    }
+    console.log("");
 
   }
 

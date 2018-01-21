@@ -4,6 +4,7 @@ export class EventPattern {
   private _start: RegExp;
   private _end: RegExp;
   private _allDay: RegExp;
+  private _mark: RegExp;
   private _name: String;
   private _category: String;
   private _type: EventPatternType;
@@ -20,8 +21,7 @@ export class EventPattern {
       this._category = patternObj.category;
     }
 
-    this._type = EventPatternType.ANNOTATION;
-
+    this._type = EventPatternType.IGNORE;
 
     if (patternObj.e) {
       this._end = new RegExp(patternObj.e);
@@ -34,6 +34,10 @@ export class EventPattern {
     if (patternObj.a) {
       this._allDay = new RegExp(patternObj.a);
       this._type = EventPatternType.ALL_DAY;
+    }
+    if (patternObj.m) {
+      this._mark = new RegExp(patternObj.m);
+      this._type = EventPatternType.MARK;
     }
 
     if ("total" in patternObj) {
@@ -57,6 +61,10 @@ export class EventPattern {
 
   get allDay(): RegExp {
     return this._allDay;
+  }
+
+  get mark(): RegExp {
+    return this._mark;
   }
 
   get name(): String {

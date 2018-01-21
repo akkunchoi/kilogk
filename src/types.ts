@@ -11,8 +11,9 @@ export interface TimeSpan {
 
 // Enum
 export enum EventPatternType {
+  IGNORE = "IGNORE",
   ALL_DAY = "ALL_DAY",
-  ANNOTATION = "ANNOTATION",
+  MARK = "MARK",
   START_DEFINITE = "START_DEFINITE",
   START_GUESS = "START_GUESS"
 }
@@ -39,3 +40,8 @@ export interface KilogkConfig {
 }
 
 export type TargetDate = Date[];
+
+export enum RecordType {
+  TIMELY = "TIMELY",
+  DAILY = "DAILY"
+}

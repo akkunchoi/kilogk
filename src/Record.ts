@@ -1,8 +1,11 @@
 import * as moment from "moment";
+import { RecordType } from "./types";
 
 export class Record {
   private _midnight = false;
-  constructor(private _text: string, private _datetime?: Date) {
+  private _hash: string;
+  constructor(private _text: string, private _datetime: Date, private _type: RecordType) {
+    this._hash = Record.number() + "_" + this._datetime.getTime() + this._text;
   }
   compare(r: Record): number {
     if (moment(this._datetime).isAfter(r._datetime)) {
@@ -23,5 +26,15 @@ export class Record {
   }
   get datetime(): Date {
     return this._datetime;
+  }
+  get hash(): string {
+    return this._hash;
+  }
+  get type(): RecordType {
+    return this._type;
+  }
+  static _number: number = 0;
+  static number(): number {
+    return ++Record._number;
   }
 }

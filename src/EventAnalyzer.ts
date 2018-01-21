@@ -7,12 +7,8 @@ export class EventAnalyzer {
   constructor(private eventDetector: EventDetector, private config: any) {
 
   }
-  analyze(targetDates: Date[], events: Event[]) {
-
-    console.log(
-      moment(_.first(targetDates)).format(),
-      moment(_.last(targetDates)).format(),
-    );
+  analyze(events: Event[]) {
+    // TODO: MARKイベントは件数カウントにしたい
 
     const patterns = this.eventDetector.getPatterns();
     const categories = _.groupBy(patterns, (pattern) => pattern.category);
