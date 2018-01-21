@@ -14,7 +14,7 @@ ignore
 
 module.exports = `
 Term
-  = head:Line tail:(_ Line)* {
+  = head:Header tail:(_ Line)* {
   return tail.reduce(function(s, v) {
     if (v) {
       s.push(v[1]);
@@ -22,9 +22,9 @@ Term
     return s;
   }, [head])
 }
-
+  
 Line
-  = Record / Header / Daily / Ignore / LineSeparator {
+  = Record / Daily / Ignore / LineSeparator {
 }
 
 Record
@@ -34,6 +34,8 @@ Record
 
 Header
   = HeaderKeyword Space date:DateFormat _ {
+  return {type: 'header', date}
+} / date:DateFormat _ {
   return {type: 'header', date}
 }
 
@@ -82,4 +84,5 @@ _ "line separator"
   = LineSeparator*
 
 LineSeparator
-  = [\\n\\r]`;
+  = [\\n\\r]
+`;
