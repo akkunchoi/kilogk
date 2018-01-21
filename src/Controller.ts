@@ -11,16 +11,20 @@ import { DailyFile } from "./DailyFile";
 import { EventDetector } from "./EventDetector";
 import { EventAnalyzer } from "./EventAnalyzer";
 import { KilogkConfig, KilogkRunOption, TargetDate } from "./types";
+import { DailyFileRepository } from "./DailyFileRepository";
+import { ConfigRepository } from "./ConfigRepository";
 
 export class Controller {
-  constructor(private config: KilogkConfig) {
+  private dailyFileRepository: DailyFileRepository;
 
+  constructor(private config: KilogkConfig) {
+    this.dailyFileRepository = new DailyFileRepository(this.config.source);
   }
 
   async start(runOption: KilogkRunOption): Promise<any> {
 
     const dates = this.createTargetDates(runOption);
-    const files = await this.loadFiles(dates);
+    const files = await this.dailyFileRepository.load(dates);
 
     const logs = files
       .map((file) => this.parse(file))
@@ -89,24 +93,6 @@ export class Controller {
     return targetDates;
   }
 
-  async loadFiles(week: TargetDate): Promise<DailyFile[]> {
-    const recordPromises = week.map((date) => {
-      const path = this.config.source.path;
-      const filename = this.config.source.filename;
-      const filepath = path + filename.replace("%date%", moment(date).format(this.config.source.format));
-
-      return fs.ensureFile(filepath).then(() => {
-        return fs.readFile(filepath, "utf-8").then((result: string) => {
-          return new DailyFile(date, result);
-        });
-      }, () => {
-        return new DailyFile(date);
-      });
-    });
-
-    return Promise.all(recordPromises);
-  }
-
   parse(dailyFile: DailyFile): DailyLog {
     const factory = new DailyLogFactory();
 
@@ -117,23 +103,24 @@ export class Controller {
     }
   }
 
-  static fromArgv(runOption: any): Promise<any> {
-    const configPath = process.env.KK_CONFIG || "./config/config.yml";
+  static async fromArgv(runOption: any): Promise<any> {
 
-    return fs.readFile(configPath, "utf-8").then((result: string) => {
-      const doc = yaml.safeLoad(result);
-
-      debug("config", doc);
-
-      const ctrl = new Controller(doc);
-
-      return ctrl.start({
-        year: runOption.year,
-        month: runOption.month,
-        week: runOption.week,
-      });
-
+    const configRepository = new ConfigRepository({
+      path: process.env.KK_CONFIG || "./config/config.yml"
     });
+
+    const config = await configRepository.load();
+
+    debug("config", config);
+
+    const ctrl = new Controller(config);
+
+    return ctrl.start({
+      year: runOption.year,
+      month: runOption.month,
+      week: runOption.week,
+    });
+
   }
 }
 

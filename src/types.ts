@@ -1,3 +1,5 @@
+import { DailyFileRepository } from "./DailyFileRepository";
+
 export interface TimeSpan {
   from: {
     hour: number;
@@ -21,12 +23,14 @@ export interface KilogkRunOption {
   week: string | undefined;
 }
 
+export interface DailyFileRepositoryConfig {
+  path: string;
+  filename: string;
+  format: string;
+}
+
 export interface KilogkConfig {
-  source: {
-    path: string;
-    filename: string;
-    format: string;
-  };
+  source: DailyFileRepositoryConfig;
   startWeek: number; // 1-7 @see https://momentjs.com/docs/#/get-set/iso-weekday/
   eventDetector: {
   };
