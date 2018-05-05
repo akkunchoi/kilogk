@@ -10,7 +10,7 @@ export class EventAnalyzer {
   constructor(private eventDetector: EventDetector) {
 
   }
-  analyze(events: Event[], options?: {outputRecords: boolean}) {
+  analyze(events: Event[], options?: {outputRecords: boolean, period: Date[]}) {
 
     options = {
       outputRecords: false,
@@ -19,6 +19,8 @@ export class EventAnalyzer {
 
     // TODO: MARKイベントは件数カウントにしたい
     // TODO: 全日イベントはそのまま表示したい
+
+    const days = options.period.length;
 
     const patterns = this.eventDetector.getPatterns();
     const categories = _.groupBy(patterns, (pattern) => pattern.category);
@@ -52,7 +54,8 @@ export class EventAnalyzer {
           if (pattern.type === EventPatternType.MARK) {
             console.log("- " + pattern.name + " " + result.count + " #");
           } else {
-            console.log("- " + pattern.name + " " + result.hours + " hours.");
+            const avg = this.formatNumber(result.hours / days);
+            console.log(`- ${pattern.name} ${result.hours} hours. (avg ${avg})`);
           }
 
           if (options.outputRecords) {
@@ -80,7 +83,8 @@ export class EventAnalyzer {
 
       });
 
-      console.log("- TOTAL: " + this.formatNumber(total) + " hours.");
+      const avg = this.formatNumber(total / days);
+      console.log(`- TOTAL: ${this.formatNumber(total)} hours. (avg ${avg})`);
       console.log("");
 
     });
