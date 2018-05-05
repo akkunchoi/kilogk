@@ -1,4 +1,5 @@
 import { DailyLogFactory } from "../src/DailyLogFactory";
+import { ParserFactory } from "../src/ParserFactory";
 import { DailyFile } from "../src/DailyFile";
 import { Record } from "../src/Record";
 
@@ -7,7 +8,9 @@ describe("DiaryLogFactory", () => {
   let factory: DailyLogFactory;
 
   beforeEach(() => {
-    factory = new DailyLogFactory();
+    return new ParserFactory().create().then((parser) => {
+      factory = new DailyLogFactory(parser);
+    });
   });
 
   describe("ビルドOK 降順の場合", () => {

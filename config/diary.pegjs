@@ -1,5 +1,4 @@
-// ref: https://pegjs.org/online
-/* sample data
+/*
 ----------------------------------------
 log 2018-01-07
 
@@ -12,7 +11,6 @@ ignore
 ----------------------------------------
 */
 
-module.exports = `
 Term
   = _ head:Header tail:(_ Line)* {
   return tail.reduce(function(s, v) {
@@ -22,7 +20,7 @@ Term
     return s;
   }, [head])
 }
-  
+
 Line
   = Record / Daily / Ignore / LineSeparator {
 }
@@ -69,7 +67,7 @@ Integer
   = [0-9]+ { return text() }
 
 Char
-  = [^\\n\\r]+ {return text() }
+  = [^\n\r]+ {return text() }
 
 Space
   = [ 　]+
@@ -84,5 +82,4 @@ _ "line separator"
   = LineSeparator*
 
 LineSeparator
-  = [\\n\\r]
-`;
+  = [\n\r]

@@ -19,15 +19,16 @@ import {
 } from "./types";
 import { DailyFileRepository } from "./DailyFileRepository";
 import { ConfigRepository } from "./ConfigRepository";
+import { ParserFactory, Parser } from "./ParserFactory";
 
 import { Container } from "inversify";
 
 export class Controller {
-  private dailyFileRepository: DailyFileRepository;
+  private parser: Parser;
+  private parserFactory: ParserFactory;
   private container: Container;
 
   constructor(private config: KilogkConfig) {
-
     this.container = new Container();
     this.container.bind<KilogkConfig>(Symbols.KilogkConfig).toConstantValue(config);
     this.container.bind<DailyFileRepositoryConfig>(Symbols.DailyFileRepositoryConfig).toConstantValue(config.source);
@@ -35,6 +36,7 @@ export class Controller {
     this.container.bind<DailyFileRepository>(DailyFileRepository).toSelf();
     this.container.bind<EventDetector>(EventDetector).toSelf();
     this.container.bind<EventAnalyzer>(EventAnalyzer).toSelf();
+    this.container.bind<ParserFactory>(ParserFactory).toSelf();
   }
 
   async start(runOption: KilogkRunOption): Promise<any> {
@@ -42,6 +44,8 @@ export class Controller {
 
     const dates = this.createTargetDates(runOption);
     const files = await dailyFileRepository.load(dates);
+
+    await this.loadParser();
 
     const logs = files
       .map((file: DailyFile) => this.parse(file))
@@ -159,13 +163,18 @@ export class Controller {
   }
 
   parse(dailyFile: DailyFile): DailyLog {
-    const factory = new DailyLogFactory();
+    const factory = new DailyLogFactory(this.parser);
 
     try {
       return factory.build(dailyFile);
     } catch (err) {
       console.warn(err, dailyFile);
     }
+  }
+
+  async loadParser() {
+    this.parserFactory = this.container.get(ParserFactory);
+    return this.parser = await this.parserFactory.create();
   }
 
   static async fromArgv(runOption: any): Promise<any> {

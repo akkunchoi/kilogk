@@ -5,9 +5,6 @@ import * as _ from "lodash";
 import { DailyFile } from "./DailyFile";
 import { RecordType } from "./types";
 
-const peg = require("pegjs");
-const parser = peg.generate(require("./peg"));
-
 type LexicalParsedLine = {
   type: string,
   date: {
@@ -28,9 +25,12 @@ class DailyLogParseError extends Error {
 }
 
 export class DailyLogFactory {
-  constructor() {
+  private parser: any;
 
+  constructor(parser: any) {
+    this.parser = parser;
   }
+
   build(dailyFile: DailyFile): DailyLog {
 
     const text = dailyFile.raw;
@@ -109,7 +109,7 @@ export class DailyLogFactory {
     let parsed = undefined;
 
     try {
-      parsed = parser.parse(str);
+      parsed = this.parser.parse(str);
     } catch (e) {
       console.warn(e.message);
       parsed = [];
@@ -123,5 +123,6 @@ export class DailyLogFactory {
 
     return parsed;
   }
+
 }
 
