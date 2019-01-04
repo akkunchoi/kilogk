@@ -40,6 +40,9 @@ export class Controller {
   }
 
   async start(runOption: KilogkRunOption): Promise<any> {
+    debug("runOption");
+    debug(runOption);
+
     const dailyFileRepository = this.container.get<DailyFileRepository>(DailyFileRepository);
 
     const dates = this.createTargetDates(runOption);
@@ -68,14 +71,34 @@ export class Controller {
       return event.elapsed > 20 * 3600 * 1000;
     });
 
+    if (runOption.outputRecords) {
+      targetLogs.forEach((targetLog: DailyLog) => {
+        targetLog.records.forEach((record: Record) => {
+          console.log(moment(record.datetime).format(), record.text);
+        });
+      });
+    }
+
+    if (runOption.outputEvents) {
+      result.events.forEach((event) => {
+        console.log("" +
+          (event.start ? moment(event.start.datetime).format("MM/DD HH:mm") : "-----------") +
+          " to " + moment(event.end.datetime).format("MM/DD HH:mm") + " " +
+          " ( " + Math.floor(event.elapsed / 1000 / 3600) + " ) " +
+          event.end.text + " " +
+          ""
+        );
+      });
+    }
+
     if (moreThan20HoursEvents.length > 0) {
       console.log("Warning: more than 20 hours");
       for (const event of moreThan20HoursEvents) {
         console.log("    " +
           event.end.text + " " +
           " [ " +
-          " from " + (event.start ? moment(event.start.datetime).format("MM-DD HH:mm") : "--") +
-          " to " + moment(event.end.datetime).format("MM-DD HH:mm") + " " +
+          " from " + (event.start ? moment(event.start.datetime).format("MM/DD HH:mm") : "--") +
+          " to " + moment(event.end.datetime).format("MM/DD HH:mm") + " " +
           " elapsed " + Math.floor(event.elapsed / 1000 / 3600) +
           " ] "
         );
@@ -94,10 +117,10 @@ export class Controller {
     eventAnalyzer.analyze(result.events, {outputRecords: runOption.outputRecords, period: dates});
     console.log("");
 
-    if (runOption.outputRecords) {
+    if (runOption.outputIsolations) {
       console.log("Isolations: ");
       for (const record of result.isolations) {
-        console.log(record.datetime, record.text);
+        console.log(moment(record.datetime).format(), record.text);
       }
       console.log("");
     }
@@ -193,7 +216,9 @@ export class Controller {
       year: runOption.year,
       month: runOption.month,
       week: runOption.week,
-      outputRecords: runOption.outputRecords
+      outputRecords: runOption.outputRecords,
+      outputEvents: runOption.outputEvents,
+      outputIsolations: runOption.outputIsolations
     });
 
   }
