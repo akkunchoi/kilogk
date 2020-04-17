@@ -2,7 +2,7 @@ import { Record } from "./Record";
 import { EventPattern } from "./EventPattern";
 import { TimeSpan } from "./types";
 import moment = require("moment");
-import * as _ from "lodash";
+import _ from "lodash";
 
 export class Event {
   constructor(private _pattern: EventPattern, private _end: Record, private _start?: Record) {

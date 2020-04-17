@@ -11,8 +11,8 @@
  * 
  */
 
-import * as dotenv from "dotenv";
-import * as minimist from "minimist";
+import dotenv from "dotenv";
+import minimist from "minimist";
 
 dotenv.config({ path: ".env" });
 

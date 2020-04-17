@@ -1,7 +1,7 @@
 import { DailyLog } from "./DailyLog";
-import * as moment from "moment";
+import moment from "moment";
 import { Record } from "./Record";
-import * as _ from "lodash";
+import _ from "lodash";
 import { DailyFile } from "./DailyFile";
 import { RecordType } from "./types";
 

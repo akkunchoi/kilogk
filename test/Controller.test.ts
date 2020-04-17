@@ -1,6 +1,6 @@
 import { Controller } from "../src/Controller";
 import { KilogkRunOption } from "../src/types";
-import * as sinon from "sinon";
+import sinon from "sinon";
 import { SinonFakeTimers } from "sinon";
 
 function fakeTimer(date: Date) {

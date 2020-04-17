@@ -1,6 +1,6 @@
 import { Controller } from "./Controller";
-import * as fs from "fs-extra";
-import * as yaml from "js-yaml";
+import fs from "fs-extra";
+import yaml from "js-yaml";
 import { KilogkConfig } from "./types";
 
 export class ConfigRepository {

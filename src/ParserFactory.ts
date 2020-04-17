@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import * as fs from "fs-extra";
+import fs from "fs-extra";
 import { Symbols, KilogkConfig } from "./types";
 const peg = require("pegjs");
 

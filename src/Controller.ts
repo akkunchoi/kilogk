@@ -1,9 +1,9 @@
 import "reflect-metadata";
 
-import * as moment from "moment";
-import * as _ from "lodash";
-import * as fs from "fs-extra";
-import * as yaml from "js-yaml";
+import moment from "moment";
+import _ from "lodash";
+import fs from "fs-extra";
+import yaml from "js-yaml";
 
 const debug = require("debug")("kilogk");
 

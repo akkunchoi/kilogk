@@ -15,7 +15,9 @@
         },
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "types": ["reflect-metadata"]
+        "types": ["reflect-metadata"],
+        "jsx": "react",
+        "esModuleInterop": true
     },
     "include": [
         "src/**/*"

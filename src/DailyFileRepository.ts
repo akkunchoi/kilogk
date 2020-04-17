@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
 
 import { DailyFile } from "./DailyFile";
-import * as fs from "fs-extra";
-import * as moment from "moment";
+import fs from "fs-extra";
+import moment from "moment";
 import { DailyFileRepositoryConfig, Symbols, TargetDate } from "./types";
 
 @injectable()

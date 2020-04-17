@@ -2,7 +2,7 @@ import { DailyLog } from "./DailyLog";
 import { Record } from "./Record";
 import { Event } from "./Event";
 import { EventPattern } from "./EventPattern";
-import * as _ from "lodash";
+import _ from "lodash";
 import { EventDetectorConfig, EventPatternType, RecordType, Symbols } from "./types";
 import { inject, injectable } from "inversify";
 
