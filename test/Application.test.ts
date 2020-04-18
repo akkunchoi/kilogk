@@ -1,4 +1,4 @@
-import { Controller } from "../src/Controller";
+import { Application } from "../src/Application";
 import { KilogkRunOption } from "../src/types";
 import sinon from "sinon";
 import { SinonFakeTimers } from "sinon";
@@ -13,12 +13,12 @@ function fakeTimer(date: Date) {
   });
 }
 
-describe("Controller", () => {
+describe("Application", () => {
 
-  let controller: Controller;
+  let controller: Application;
 
   beforeEach(() => {
-    controller = new Controller({
+    controller = new Application({
       source: {
         path: "",
         filename: "",

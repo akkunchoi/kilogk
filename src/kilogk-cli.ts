@@ -32,9 +32,9 @@ if (argv.help || argv.h) {
   process.exit(0);
 }
 
-import { Controller } from "./Controller";
+import { Application } from "./Application";
 import { exists } from "fs";
-Controller.fromArgv(argv).then(() => {
+Application.fromArgv(argv).then(() => {
   console.log("Done.");
 }).catch((err) => {
   console.error(err);
