@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
-import { render, Box, Text, Static, useInput, useApp, Newline } from "ink";
+import { render, Box, Text, Static, useInput, useApp, Newline, Spacer } from "ink";
 import React from "react";
-import { KilogkRunOption, RecordType, KilogkConfig } from "./types";
+import { KilogkRunOption, RecordType, KilogkConfig, EventPatternType } from "./types";
 import { Container } from "inversify";
 import { DailyLog } from "./DailyLog";
 import moment from "moment";
@@ -10,6 +10,7 @@ import { Controller } from "./Controller";
 import { Record } from "./Record";
 import { Event } from "./Event";
 import MultiSelect from 'ink-multi-select';
+import { EventPattern } from "./EventPattern";
 
 const UserInput = () => {
   const { exit } = useApp();
@@ -51,6 +52,11 @@ const Demo = () => {
   return <MultiSelect items={items} onSubmit={handleSelect} />;
 };
 
+// const formatHour = (x: number) => Math.round(x * 10) / 10;
+const formatHour = (x: number) => (new Intl.NumberFormat('ja-JP', {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1
+}).format(x))
 
 export const App = (props: { runOption: KilogkRunOption, container: Container }) => {
   const runOption = props.runOption;
@@ -70,6 +76,7 @@ export const App = (props: { runOption: KilogkRunOption, container: Container })
 
   }, [props.runOption]);
 
+  const ymdFormat = "YYYY/MM/DD"
   const dateFormat = "MM/DD"
   const timeFormat = "HH:mm"
   const dayFormat = "ddd"
@@ -82,9 +89,49 @@ export const App = (props: { runOption: KilogkRunOption, container: Container })
       result.dates &&
       <Box flexDirection="column">
         <Box flexDirection="row">
-          <Text>{moment(_.first(result.dates)).format(`${dateFormat} ${dayFormat}`)} - {moment(_.last(result.dates)).format(`${dateFormat} ${dayFormat}`)}</Text>
-          <Newline></Newline>
+          <Text># {moment(_.first(result.dates)).format(`${ymdFormat} ${dayFormat}`)} - {moment(_.last(result.dates)).format(`${ymdFormat} ${dayFormat}`)}</Text>
         </Box>
+        {
+          runOption.outputSummary &&
+          <>
+            {
+              result.summary.map((categoryGrouped: any, i: number) => (
+                <Box key={i} flexDirection="column" paddingTop={1}>
+                  <Box>
+                    <Text>## {categoryGrouped.category}</Text>
+                  </Box>
+                  <Box key={categoryGrouped.category} flexDirection="column">
+                    {
+                      categoryGrouped.aggregated.map((a: any, j: number) => (
+                        <Box key={j}>
+                          <Box width="18">
+                            <Text>{a.key}</Text>
+                          </Box>
+                          <Box>
+                            {
+                              a.pattern.type === EventPatternType.MARK &&
+                              <>
+                                <Text>{a.count} counts</Text>
+                              </>
+                            }
+                            {
+                              a.pattern.type !== EventPatternType.MARK &&
+                              <>
+                                { /* TODO: 右寄せしたい */ }
+                                <Text>{formatHour(a.hours) } hours</Text>
+                                <Text> (avg {formatHour(a.averageHours) })</Text>
+                              </>
+                            }
+                          </Box>
+                        </Box>
+                      ))
+                    }
+                  </Box>
+                </Box>
+              ))
+            }
+          </>
+        }
         {
           runOption.outputRecords &&
           <>

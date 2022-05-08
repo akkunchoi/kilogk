@@ -151,6 +151,7 @@ export class Application {
       year: runOption.year,
       month: runOption.month,
       week: runOption.week,
+      outputSummary: runOption.outputSummary,
       outputRecords: runOption.outputRecords,
       outputEvents: runOption.outputEvents,
       outputIsolations: runOption.outputIsolations

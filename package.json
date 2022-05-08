@@ -67,8 +67,11 @@
     "jest": "^19.0.2",
     "sinon": "^4.1.6",
     "ts-jest": "^19.0.8",
-    "ts-node": "^8.8.2",
+    "ts-node": "^10.7.0",
     "tslint": "^5.0.0",
-    "typescript": "^2.6.2"
+    "typescript": "^4.6.4"
+  },
+  "volta": {
+    "node": "14.19.2"
   }
 }

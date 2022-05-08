@@ -9,6 +9,8 @@ import { EventDetector } from "./EventDetector";
 import { DailyLogFactory } from "./DailyLogFactory";
 import { Parser, ParserFactory } from "./ParserFactory";
 import { Record } from "./Record";
+import { formatNumber } from "./util";
+import { Event } from "./Event"
 
 @injectable()
 export class Controller {
@@ -64,15 +66,55 @@ export class Controller {
       return event.elapsed > 20 * 3600 * 1000;
     });
 
+    // イベント分析
+    const summary = this.summarizeEvents(result.events, dates)
+
     return {
       ...result,
+      summary,
       dates,
       targetLogs,
       moreThan20HoursEvents,
     };
 
   }
+  summarizeEvents(events: Event[], period: Date[]) {
+    const options = {
+      period
+    };
+    // TODO: MARKイベントは件数カウントにしたい
+    // TODO: 全日イベントはそのまま表示したい
+    const days = options.period.length;
+    const patterns = this.eventDetector.getPatterns();
+    const categories = _.groupBy(patterns, (pattern) => pattern.category);
+    const groupedObj = _.groupBy(events, (event) => event.pattern.name);
+    const grouped = Object.keys(groupedObj).map(key => ({
+      key, 
+      events: groupedObj[key],
+      pattern: patterns.find(p => p.name === key)
+    }))
+
+    return Object.keys(categories).map((category) => {
+      const matched = grouped.filter(g => g.pattern.category === category)
+      return {
+        category,
+        aggregated: matched.map(m => {
+          const sum = _.sumBy(m.events, (event) => event.elapsed)
+          const hours = sum / 1000 / 3600;
+          const averageHours = hours / days;
+          return {
+            ...m,
+            hours: formatNumber(hours),
+            averageHours: formatNumber(averageHours),
+            count: m.events.length,
+          }
+        })
+      }
+    })
+  }
 }
+
+
 
 function decideTargetYear(runOption: KilogkRunOption): number {
 

@@ -20,6 +20,7 @@ export interface KilogkRunOption {
   year: string | undefined;
   month: string | undefined;
   week: string | undefined;
+  outputSummary: boolean | undefined;
   outputRecords: boolean | undefined;
   outputEvents: boolean | undefined;
   outputIsolations: boolean | undefined;
