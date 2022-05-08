@@ -10,6 +10,7 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node src/kilogk-cli.ts",
+    "start:beta": "BETA=true ts-node src/kilogk-cli.ts",
     "test": "jest --forceExit --coverage",
     "build": "tsc",
     "watch": "tsc -w",
@@ -36,17 +37,20 @@
     "testEnvironment": "node"
   },
   "dependencies": {
+    "@types/ink-select-input": "^3.0.1",
     "debug": "^3.1.0",
     "dotenv": "^2.0.0",
     "fs-extra": "^4.0.2",
-    "ink": "^2.7.1",
+    "ink": "^3.2.0",
+    "ink-multi-select": "^2.0.0",
+    "ink-select-input": "^4.2.1",
     "inversify": "^4.13.0",
     "js-yaml": "^3.10.0",
     "lodash": "^4.17.4",
     "minimist": "^1.2.0",
     "moment": "^2.19.3",
     "pegjs": "^0.10.0",
-    "react": "^16.13.1",
+    "react": "^18.1.0",
     "react-dom": "^16.13.1",
     "reflect-metadata": "^0.1.12"
   },

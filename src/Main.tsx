@@ -1,146 +1,180 @@
 import { useState, useEffect, useContext } from "react";
-import { render, Box, Color, Text, Static, useInput, AppContext } from "ink";
+import { render, Box, Text, Static, useInput, useApp, Newline } from "ink";
 import React from "react";
 import { KilogkRunOption, RecordType, KilogkConfig } from "./types";
 import { Container } from "inversify";
-import { DailyFileRepository } from "./DailyFileRepository";
-import { DailyFile } from "./DailyFile";
 import { DailyLog } from "./DailyLog";
 import moment from "moment";
 import _ from "lodash";
-import { EventDetector } from "./EventDetector";
-import { EventAnalyzer } from "./EventAnalyzer";
 import { Controller } from "./Controller";
-import { DailyLogFactory } from "./DailyLogFactory";
 import { Record } from "./Record";
 import { Event } from "./Event";
+import MultiSelect from 'ink-multi-select';
 
-export const App = (props: {runOption: KilogkRunOption, container: Container}) => {
+const UserInput = () => {
+  const { exit } = useApp();
+
+  useInput((input, key) => {
+    if (input === "q") {
+      console.log(input);
+      // Exit program
+      exit();
+    }
+    if (key.leftArrow) {
+      console.log("left");
+      // Left arrow key pressed
+    }
+  });
+  return <></>;
+};
+
+const Demo = () => {
+  const handleSelect = (item: any) => {
+    console.log('handle', item)
+  };
+
+  const items = [
+    {
+      label: 'First',
+      value: 'first'
+    },
+    {
+      label: 'Second',
+      value: 'second'
+    },
+    {
+      label: 'Third',
+      value: 'third'
+    }
+  ];
+
+  return <MultiSelect items={items} onSubmit={handleSelect} />;
+};
+
+
+export const App = (props: { runOption: KilogkRunOption, container: Container }) => {
   const runOption = props.runOption;
   const container = props.container;
 
   const [result, setResult] = useState({} as any);
-  const { exit } = useContext(AppContext);
 
   const ctrl = container.get<Controller>(Controller);
   const built = ctrl.build(runOption);
 
   useEffect(() => {
-    console.log("effect");
     built.then((result) => {
-      console.log("then");
       setResult(result);
-    });  
+    });
     return () => {
-      // console.log("cleanup");
     };
 
   }, [props.runOption]);
 
-  const UserInput = () => {
-    useInput((input, key) => {
-      if (input === "q") {
-        console.log(input);
-        // Exit program
-        exit();
-      }
-      if (key.leftArrow) {
-        console.log("left");
-        // Left arrow key pressed
-      }
-    });
-    return <></>;
-  };
+  const dateFormat = "MM/DD"
+  const timeFormat = "HH:mm"
+  const dayFormat = "ddd"
+  const notimeText = '-----'
+  const nodateText = '-----'
+  // this.eventAnalyzer.analyze(result.events, {outputRecords: runOption.outputRecords, period: dates});
 
   return <>
     {
       result.dates &&
       <Box flexDirection="column">
         <Box flexDirection="row">
-          { moment(_.first(result.dates)).format() } - { moment(_.last(result.dates)).format() }
+          <Text>{moment(_.first(result.dates)).format(`${dateFormat} ${dayFormat}`)} - {moment(_.last(result.dates)).format(`${dateFormat} ${dayFormat}`)}</Text>
+          <Newline></Newline>
         </Box>
-          {
-            runOption.outputRecords &&
-              <div>
-                {
-                  (result.targetLogs || []).map((targetLog: DailyLog, i: number) => (
-                    <div key={i}>
-                      {
-                        targetLog.records.map((record: Record, j: number) => (
-                          <Box key={j}>
-                            <Box width="26">{moment(record.datetime).format()}</Box>
-                            <Box>{record.text}</Box>
-                          </Box>
-                        ))
-                      }
-                    </div>
-                  ))
-                }
-              </div>  
-            }
-            { 
-              runOption.outputEvents &&
-              <div>
-                {
-                  (result.events || []).map((event: Event, i: number) => (
-                    <Box key={i}>
-                      <Box>{ event.start ? moment(event.start.datetime).format("MM/DD HH:mm") : "-----------" }</Box>
-                      <Box>{ " to " + moment(event.end.datetime).format("MM/DD HH:mm") + " " }</Box>
-                      <Box>{ " ( " + Math.floor(event.elapsed / 1000 / 3600) + " ) " }</Box>
-                      <Box>{ event.end.text + " " }</Box>
-                    </Box>
-                  ))
-                }
-              </div>  
-            }
-            { 
-              result.moreThan20HoursEvents && result.moreThan20HoursEvents.length > 0 &&
-              <div>
-                {
-                  (result.moreThan20HoursEvents || []).map((event: Event, i: number) => (
-                    <Box key={i}>
-                      <Box>{ event.end.text + " " }</Box>
-                      <Box>{ " [ " }</Box>
-                      <Box>{ " from " + (event.start ? moment(event.start.datetime).format("MM/DD HH:mm") : "--") }</Box>
-                      <Box>{ " to " + moment(event.end.datetime).format("MM/DD HH:mm") + " " }</Box>
-                      <Box>{ " elapsed " + Math.floor(event.elapsed / 1000 / 3600) }</Box>
-                      <Box>{ " ] " }</Box>
-                    </Box>
-                  ))
-                }
-              </div>  
-            }   
-            { 
-              result.outputIsolations && result.outputIsolations.length > 0 &&
-              <div>
-                {
-                  (result.outputIsolations || []).map((record: Record, i: number) => (
-                    <Box key={i}>
-                      <Box width="26">{moment(record.datetime).format()}</Box>
-                      <Box>{record.text}</Box>
-                    </Box>
-                  ))
-                }
-              </div>  
-            }
+        {
+          runOption.outputRecords &&
+          <>
             {
-              
+              (result.targetLogs || []).map((targetLog: DailyLog, i: number) => (
+                targetLog.records.map((record: Record, j: number) => (
+                  <Box key={j}>
+                    <Box width="16">
+                      <Text>
+                        {
+                          record.type === RecordType.TIMELY &&
+                          <>
+                            {moment(record.datetime).format(`${dateFormat} ${timeFormat} ${dayFormat}`)}
+                          </>
+                        }
+                        {
+                          record.type === RecordType.DAILY &&
+                          <>
+                            {moment(record.datetime).format(`${dateFormat} ${notimeText} ${dayFormat}`)}
+                          </>
+                        }
+                      </Text>
+                    </Box>
+                    <Text>{record.text}</Text>
+                  </Box>
+                ))
+              ))
             }
-
+          </>
+        }
+        {
+          runOption.outputEvents &&
+          <>
+            {
+              (result.events || []).map((event: Event, i: number) => (
+                <Box key={i}>
+                  <Text>{event.start ? moment(event.start.datetime).format(`${dateFormat} ${timeFormat}`) : `${nodateText} ${notimeText}`}</Text>
+                  <Text>{" to " + moment(event.end.datetime).format(`${dateFormat} ${timeFormat}`) + " "}</Text>
+                  <Text>{" ( " + Math.floor(event.elapsed / 1000 / 3600) + " ) "}</Text>
+                  <Text>{event.end.text + " "}</Text>
+                </Box>
+              ))
+            }
+          </>
+        }
+        {
+          result.moreThan20HoursEvents && result.moreThan20HoursEvents.length > 0 &&
+          <>
+            {
+              (result.moreThan20HoursEvents || []).map((event: Event, i: number) => (
+                <Box key={i}>
+                  <Text>{event.end.text + " "}</Text>
+                  <Text>{" [ "}</Text>
+                  <Text>{" from " + (event.start ? moment(event.start.datetime).format(`${dateFormat} ${timeFormat}`) : "--")}</Text>
+                  <Text>{" to " + moment(event.end.datetime).format(`${dateFormat} ${timeFormat}`) + " "}</Text>
+                  <Text>{" elapsed " + Math.floor(event.elapsed / 1000 / 3600)}</Text>
+                  <Text>{" ] "}</Text>
+                </Box>
+              ))
+            }
+          </>
+        }
+        {
+          result.outputIsolations && result.outputIsolations.length > 0 &&
+          <>
+            {
+              (result.outputIsolations || []).map((record: Record, i: number) => (
+                <Box key={i}>
+                  <Box width="26">
+                    <Text>{moment(record.datetime).format()}</Text>
+                  </Box>
+                  <Text>{record.text}</Text>
+                </Box>
+              ))
+            }
+          </>
+        }
+        <Newline></Newline>
+        <Text>END</Text>
+        <Newline></Newline>
       </Box>
     }
   </>;
 };
 
-export default async (runOption: KilogkRunOption, container: Container) => {  
+export default async (runOption: KilogkRunOption, container: Container) => {
 
   const result: any = {};
 
-  const {unmount, waitUntilExit} = render(<App runOption={runOption} container={container} />);
+  const { unmount, waitUntilExit } = render(<App runOption={runOption} container={container} />);
   return waitUntilExit;
 
 };
-        // // console.log("Events: ");
-        // // const eventAnalyzer = this.container.get<EventAnalyzer>(EventAnalyzer);
-        // // eventAnalyzer.analyze(_result.events, {outputRecords: runOption.outputRecords, period: dates});
-        // // console.log("");

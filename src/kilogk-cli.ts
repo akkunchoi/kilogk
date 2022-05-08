@@ -35,7 +35,7 @@ if (argv.help || argv.h) {
 import { Application } from "./Application";
 import { exists } from "fs";
 Application.fromArgv(argv).then(() => {
-  console.log("Done.");
+  // console.log("Done.");
 }).catch((err) => {
   console.error(err);
 });
