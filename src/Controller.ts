@@ -112,7 +112,6 @@ export class Controller {
     );
     console.log("");
 
-    console.log("Events: ");
     const eventAnalyzer = this.container.get<EventAnalyzer>(EventAnalyzer);
     eventAnalyzer.analyze(result.events, {outputRecords: runOption.outputRecords, period: dates});
     console.log("");

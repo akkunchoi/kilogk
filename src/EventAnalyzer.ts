@@ -40,7 +40,7 @@ export class EventAnalyzer {
     });
 
     _.forEach(categories, (patterns, category) => {
-      console.log("# " + category);
+      console.log("## " + category);
 
       let total = 0;
 
